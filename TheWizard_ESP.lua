@@ -3,19 +3,38 @@
     Universal FPS Suite
 ]]
 
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- Debug: Check if script starts
+print("[TheWizard Hub] Starting...")
+
+local success, Rayfield = pcall(function()
+    return loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+end)
+
+if not success or not Rayfield then
+    warn("[TheWizard Hub] Failed to load Rayfield: " .. tostring(Rayfield))
+    
+    -- Try alternative URL
+    success, Rayfield = pcall(function()
+        return loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua'))()
+    end)
+    
+    if not success or not Rayfield then
+        warn("[TheWizard Hub] Alternative also failed. Check your executor.")
+        return
+    end
+end
+
+print("[TheWizard Hub] Rayfield loaded successfully")
 
 local Window = Rayfield:CreateWindow({
     Name = "TheWizard Hub",
-    Icon = "crosshair",
     LoadingTitle = "TheWizard Hub",
-    LoadingSubtitle = "Universal FPS Suite v2.0",
+    LoadingSubtitle = "by TheWizard",
     Theme = "Ocean",
-    ToggleUIKeybind = "RightShift",
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "TheWizardHub",
-        FileName = "WizardConfig"
+        FolderName = nil,
+        FileName = "TheWizardConfig"
     },
     Discord = {
         Enabled = false
@@ -23,8 +42,8 @@ local Window = Rayfield:CreateWindow({
     KeySystem = true,
     KeySettings = {
         Title = "TheWizard Hub",
-        Subtitle = "Authorization Required",
-        Note = "Contact TheWizard for access",
+        Subtitle = "Key System",
+        Note = "Enter key to access",
         FileName = "TheWizardKey",
         SaveKey = true,
         GrabKeyFromSite = false,
@@ -32,86 +51,27 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
+print("[TheWizard Hub] Window created")
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
-local Workspace = game:GetService("Workspace")
 
 local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
+local Camera = workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
 
-local Settings = {
-    Aimbot = {
-        Enabled = false,
-        FOV = 150,
-        Smoothness = 0.15,
-        TargetPart = "Head",
-        TeamCheck = true,
-        ShowFOV = true
-    },
-    Triggerbot = {
-        Enabled = false,
-        Delay = 0.1
-    },
-    ESP = {
-        Enabled = false,
-        TeamCheck = true
-    },
-    World = {
-        Fullbright = false
-    },
-    Movement = {
-        Speed = 16,
-        JumpPower = 50
-    },
-    Player = {
-        GodMode = false
-    }
-}
+local AimbotEnabled = false
+local AimbotFOV = 150
+local AimbotSmooth = 0.15
+local TargetPart = "Head"
+local TeamCheck = true
+local ESPEnabled = false
+local TriggerEnabled = false
+local GodModeEnabled = false
 
-local Connections = {}
 local FOVCircle = nil
-
-local function IsAlive(player)
-    local char = player.Character
-    if not char then return false end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
-    return hum and hum.Health > 0 and root
-end
-
-local function IsTeammate(player)
-    if not Settings.Aimbot.TeamCheck then return false end
-    if not player.Team or not LocalPlayer.Team then return false end
-    return player.Team == LocalPlayer.Team
-end
-
-local function GetClosestPlayer()
-    local closest = nil
-    local shortestDist = Settings.Aimbot.FOV
-    local mousePos = UserInputService:GetMouseLocation()
-    
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and IsAlive(player) and not IsTeammate(player) then
-            local char = player.Character
-            local part = char:FindFirstChild(Settings.Aimbot.TargetPart) or char:FindFirstChild("Head")
-            
-            if part then
-                local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-                if onScreen then
-                    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
-                    if dist < shortestDist then
-                        closest = part
-                        shortestDist = dist
-                    end
-                end
-            end
-        end
-    end
-    return closest
-end
 
 pcall(function()
     FOVCircle = Drawing.new("Circle")
@@ -120,41 +80,74 @@ pcall(function()
     FOVCircle.Filled = false
     FOVCircle.Transparency = 0.7
     FOVCircle.NumSides = 60
-    FOVCircle.Radius = Settings.Aimbot.FOV
+    FOVCircle.Radius = AimbotFOV
     FOVCircle.Visible = false
 end)
 
-local function UpdateESP(enabled)
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            local existing = player.Character:FindFirstChild("WizardHL")
-            if existing then existing:Destroy() end
-            
-            if enabled and IsAlive(player) then
-                if not Settings.ESP.TeamCheck or not IsTeammate(player) then
-                    local hl = Instance.new("Highlight")
-                    hl.Name = "WizardHL"
-                    hl.FillColor = IsTeammate(player) and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
-                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-                    hl.FillTransparency = 0.5
-                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                    hl.Parent = player.Character
+local function IsAlive(plr)
+    if not plr or not plr.Character then return false end
+    local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+    return hum and hum.Health > 0
+end
+
+local function IsEnemy(plr)
+    if not TeamCheck then return true end
+    if not plr.Team or not LocalPlayer.Team then return true end
+    return plr.Team ~= LocalPlayer.Team
+end
+
+local function GetTarget()
+    local closest, dist = nil, AimbotFOV
+    local mPos = UserInputService:GetMouseLocation()
+    
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and IsAlive(plr) and IsEnemy(plr) then
+            local part = plr.Character:FindFirstChild(TargetPart) or plr.Character:FindFirstChild("Head")
+            if part then
+                local pos, vis = Camera:WorldToViewportPoint(part.Position)
+                if vis then
+                    local d = (Vector2.new(pos.X, pos.Y) - mPos).Magnitude
+                    if d < dist then
+                        closest = part
+                        dist = d
+                    end
                 end
+            end
+        end
+    end
+    return closest
+end
+
+local function RefreshESP()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local old = plr.Character:FindFirstChild("WESP")
+            if old then old:Destroy() end
+            
+            if ESPEnabled and IsAlive(plr) and IsEnemy(plr) then
+                local hl = Instance.new("Highlight")
+                hl.Name = "WESP"
+                hl.FillColor = Color3.fromRGB(255, 0, 0)
+                hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                hl.FillTransparency = 0.5
+                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                hl.Parent = plr.Character
             end
         end
     end
 end
 
-local CombatTab = Window:CreateTab("Combat", "crosshair")
-CombatTab:CreateSection("Aim Assist")
+-- COMBAT TAB
+local CombatTab = Window:CreateTab("Combat", 4483362458)
+CombatTab:CreateSection("Aimbot")
 
 CombatTab:CreateToggle({
-    Name = "Aimbot",
+    Name = "Aimbot Enabled",
     CurrentValue = false,
     Flag = "Aimbot",
     Callback = function(v)
-        Settings.Aimbot.Enabled = v
-        if FOVCircle then FOVCircle.Visible = v and Settings.Aimbot.ShowFOV end
+        AimbotEnabled = v
+        if FOVCircle then FOVCircle.Visible = v end
     end
 })
 
@@ -166,7 +159,7 @@ CombatTab:CreateSlider({
     CurrentValue = 150,
     Flag = "FOV",
     Callback = function(v)
-        Settings.Aimbot.FOV = v
+        AimbotFOV = v
         if FOVCircle then FOVCircle.Radius = v end
     end
 })
@@ -175,39 +168,30 @@ CombatTab:CreateSlider({
     Name = "Smoothness",
     Range = {0.05, 0.5},
     Increment = 0.01,
+    Suffix = "",
     CurrentValue = 0.15,
     Flag = "Smooth",
     Callback = function(v)
-        Settings.Aimbot.Smoothness = v
+        AimbotSmooth = v
     end
 })
 
 CombatTab:CreateDropdown({
-    Name = "Target",
+    Name = "Target Part",
     Options = {"Head", "HumanoidRootPart", "UpperTorso"},
     CurrentOption = {"Head"},
-    Flag = "Target",
+    Flag = "Part",
     Callback = function(v)
-        Settings.Aimbot.TargetPart = v[1]
+        TargetPart = v[1]
     end
 })
 
 CombatTab:CreateToggle({
     Name = "Team Check",
     CurrentValue = true,
-    Flag = "TeamCheck",
+    Flag = "Team",
     Callback = function(v)
-        Settings.Aimbot.TeamCheck = v
-    end
-})
-
-CombatTab:CreateToggle({
-    Name = "Show FOV",
-    CurrentValue = true,
-    Flag = "ShowFOV",
-    Callback = function(v)
-        Settings.Aimbot.ShowFOV = v
-        if FOVCircle then FOVCircle.Visible = v and Settings.Aimbot.Enabled end
+        TeamCheck = v
     end
 })
 
@@ -216,13 +200,14 @@ CombatTab:CreateSection("Triggerbot")
 CombatTab:CreateToggle({
     Name = "Triggerbot",
     CurrentValue = false,
-    Flag = "Triggerbot",
+    Flag = "Trigger",
     Callback = function(v)
-        Settings.Triggerbot.Enabled = v
+        TriggerEnabled = v
     end
 })
 
-local VisualsTab = Window:CreateTab("Visuals", "eye")
+-- VISUALS TAB
+local VisualsTab = Window:CreateTab("Visuals", 4483362458)
 VisualsTab:CreateSection("ESP")
 
 VisualsTab:CreateToggle({
@@ -230,18 +215,8 @@ VisualsTab:CreateToggle({
     CurrentValue = false,
     Flag = "ESP",
     Callback = function(v)
-        Settings.ESP.Enabled = v
-        UpdateESP(v)
-    end
-})
-
-VisualsTab:CreateToggle({
-    Name = "ESP Team Check",
-    CurrentValue = true,
-    Flag = "ESPTeam",
-    Callback = function(v)
-        Settings.ESP.TeamCheck = v
-        UpdateESP(Settings.ESP.Enabled)
+        ESPEnabled = v
+        RefreshESP()
     end
 })
 
@@ -250,21 +225,18 @@ VisualsTab:CreateSection("World")
 VisualsTab:CreateToggle({
     Name = "Fullbright",
     CurrentValue = false,
-    Flag = "Fullbright",
+    Flag = "Bright",
     Callback = function(v)
-        Settings.World.Fullbright = v
         if v then
             Lighting.Brightness = 2
             Lighting.ClockTime = 14
             Lighting.FogEnd = 100000
             Lighting.GlobalShadows = false
-            Lighting.Ambient = Color3.fromRGB(178, 178, 178)
         else
             Lighting.Brightness = 1
             Lighting.ClockTime = 12
             Lighting.FogEnd = 10000
             Lighting.GlobalShadows = true
-            Lighting.Ambient = Color3.fromRGB(0, 0, 0)
         end
     end
 })
@@ -275,181 +247,129 @@ VisualsTab:CreateSlider({
     Increment = 1,
     Suffix = "",
     CurrentValue = 70,
-    Flag = "CamFOV",
+    Flag = "Cam",
     Callback = function(v)
         Camera.FieldOfView = v
     end
 })
 
-local MovementTab = Window:CreateTab("Movement", "zap")
-MovementTab:CreateSection("Speed")
+-- PLAYER TAB
+local PlayerTab = Window:CreateTab("Player", 4483362458)
+PlayerTab:CreateSection("Movement")
 
-MovementTab:CreateSlider({
+PlayerTab:CreateSlider({
     Name = "Walk Speed",
     Range = {16, 150},
     Increment = 1,
+    Suffix = "",
     CurrentValue = 16,
     Flag = "Speed",
     Callback = function(v)
-        Settings.Movement.Speed = v
-        local char = LocalPlayer.Character
-        if char then
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            if hum then hum.WalkSpeed = v end
+        if LocalPlayer.Character then
+            local h = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if h then h.WalkSpeed = v end
         end
     end
 })
 
-MovementTab:CreateSlider({
+PlayerTab:CreateSlider({
     Name = "Jump Power",
     Range = {50, 150},
     Increment = 5,
+    Suffix = "",
     CurrentValue = 50,
     Flag = "Jump",
     Callback = function(v)
-        Settings.Movement.JumpPower = v
-        local char = LocalPlayer.Character
-        if char then
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            if hum then hum.JumpPower = v end
+        if LocalPlayer.Character then
+            local h = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if h then h.JumpPower = v end
         end
     end
 })
 
-local PlayerTab = Window:CreateTab("Player", "user")
 PlayerTab:CreateSection("Survival")
 
 PlayerTab:CreateToggle({
     Name = "God Mode",
     CurrentValue = false,
-    Flag = "GodMode",
+    Flag = "God",
     Callback = function(v)
-        Settings.Player.GodMode = v
-        if v then
-            Connections.God = RunService.Heartbeat:Connect(function()
-                local char = LocalPlayer.Character
-                if char then
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    if hum then
-                        hum.MaxHealth = math.huge
-                        hum.Health = math.huge
-                    end
-                end
-            end)
-        else
-            if Connections.God then Connections.God:Disconnect() end
-            local char = LocalPlayer.Character
-            if char then
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then
-                    hum.MaxHealth = 100
-                    hum.Health = 100
-                end
-            end
-        end
+        GodModeEnabled = v
     end
 })
 
-PlayerTab:CreateButton({
-    Name = "Respawn",
-    Callback = function()
-        local char = LocalPlayer.Character
-        if char then
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            if hum then hum.Health = 0 end
-        end
-    end
-})
+-- SETTINGS TAB
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
+SettingsTab:CreateSection("Info")
+SettingsTab:CreateLabel("TheWizard Hub v2.0")
+SettingsTab:CreateLabel("Universal FPS Suite")
 
-local MiscTab = Window:CreateTab("Settings", "settings")
-MiscTab:CreateSection("Anti-AFK")
-
-MiscTab:CreateToggle({
-    Name = "Anti-AFK",
-    CurrentValue = false,
-    Flag = "AntiAFK",
-    Callback = function(v)
-        if v then
-            local vu = game:GetService("VirtualUser")
-            Connections.AFK = LocalPlayer.Idled:Connect(function()
-                vu:Button2Down(Vector2.new(0,0), Camera.CFrame)
-                task.wait(1)
-                vu:Button2Up(Vector2.new(0,0), Camera.CFrame)
-            end)
-        else
-            if Connections.AFK then Connections.AFK:Disconnect() end
-        end
-    end
-})
-
-MiscTab:CreateSection("Info")
-MiscTab:CreateLabel("TheWizard Hub v2.0")
-MiscTab:CreateLabel("Universal FPS Suite")
-
-MiscTab:CreateButton({
+SettingsTab:CreateButton({
     Name = "Destroy Script",
     Callback = function()
-        for _, c in pairs(Connections) do
-            pcall(function() c:Disconnect() end)
-        end
         if FOVCircle then pcall(function() FOVCircle:Remove() end) end
-        UpdateESP(false)
+        ESPEnabled = false
+        RefreshESP()
         Rayfield:Destroy()
     end
 })
 
+-- MAIN LOOP
 RunService.RenderStepped:Connect(function()
+    -- FOV Circle
     if FOVCircle then
         FOVCircle.Position = UserInputService:GetMouseLocation()
     end
     
-    if Settings.Aimbot.Enabled and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-        local target = GetClosestPlayer()
-        if target then
-            local targetCF = CFrame.new(Camera.CFrame.Position, target.Position)
-            Camera.CFrame = Camera.CFrame:Lerp(targetCF, Settings.Aimbot.Smoothness)
+    -- Aimbot
+    if AimbotEnabled and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+        local t = GetTarget()
+        if t then
+            Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, t.Position), AimbotSmooth)
         end
     end
     
-    if Settings.Triggerbot.Enabled then
+    -- Triggerbot
+    if TriggerEnabled then
         local hit = Mouse.Target
         if hit then
-            local player = Players:GetPlayerFromCharacter(hit.Parent) or Players:GetPlayerFromCharacter(hit.Parent.Parent)
-            if player and player ~= LocalPlayer and not IsTeammate(player) then
-                task.wait(Settings.Triggerbot.Delay)
+            local plr = Players:GetPlayerFromCharacter(hit.Parent) or Players:GetPlayerFromCharacter(hit.Parent.Parent)
+            if plr and plr ~= LocalPlayer and IsEnemy(plr) then
+                task.wait(0.1)
                 mouse1click()
             end
         end
     end
+    
+    -- God Mode
+    if GodModeEnabled and LocalPlayer.Character then
+        local h = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if h then
+            h.MaxHealth = math.huge
+            h.Health = math.huge
+        end
+    end
 end)
 
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
+-- ESP on new players
+Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(function()
         task.wait(1)
-        if Settings.ESP.Enabled then UpdateESP(true) end
+        RefreshESP()
     end)
 end)
 
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        player.CharacterAdded:Connect(function()
-            task.wait(1)
-            if Settings.ESP.Enabled then UpdateESP(true) end
-        end)
-    end
+for _, plr in pairs(Players:GetPlayers()) do
+    plr.CharacterAdded:Connect(function()
+        task.wait(1)
+        RefreshESP()
+    end)
 end
 
-LocalPlayer.CharacterAdded:Connect(function(char)
-    task.wait(0.5)
-    local hum = char:WaitForChild("Humanoid")
-    hum.WalkSpeed = Settings.Movement.Speed
-    hum.JumpPower = Settings.Movement.JumpPower
-end)
-
-Rayfield:LoadConfiguration()
+print("[TheWizard Hub] Fully loaded!")
 
 Rayfield:Notify({
     Title = "TheWizard Hub",
-    Content = "Script loaded - RMB for aimbot",
+    Content = "Loaded - Hold RMB for aimbot",
     Duration = 4
 })
