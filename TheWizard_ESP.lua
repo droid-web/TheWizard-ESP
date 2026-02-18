@@ -1,146 +1,394 @@
--- Rayfield UI Interface Example pour Roblox
--- Chargement de la bibliothèque Rayfield
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Création de la fenêtre principale
 local Window = Rayfield:CreateWindow({
-    Name = "🎮 Mon Hub Roblox",
-    LoadingTitle = "Chargement de l'interface",
-    LoadingSubtitle = "par Votre Nom",
+    Name = "TheWizard Hub",
+    LoadingTitle = "TheWizard Hub",
+    LoadingSubtitle = "by TheWizard",
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = nil, -- Dossier personnalisé pour votre hub
-        FileName = "MonHubConfig"
+        FolderName = nil,
+        FileName = "TheWizardHub"
     },
     Discord = {
         Enabled = false,
-        Invite = "noinvitelink", -- Code d'invitation Discord (sans discord.gg/)
-        RememberJoins = true -- false pour forcer à rejoindre à chaque fois
     },
-    KeySystem = false, -- Activer le système de clés
+    KeySystem = true,
     KeySettings = {
-        Title = "Système de Clés",
-        Subtitle = "Entrez votre clé",
-        Note = "Rejoignez le Discord pour obtenir une clé",
-        FileName = "MaCle",
+        Title = "TheWizard Hub",
+        Subtitle = "Key System",
+        Note = "Key required to access",
+        FileName = "TheWizardKey",
         SaveKey = true,
         GrabKeyFromSite = false,
-        Key = {"MaCleSecrete123"} -- Votre clé
+        Key = {"WIZARD2025"}
     }
 })
 
--- ═══════════════════════════════════════════════════════════════
--- TAB 1: PRINCIPAL
--- ═══════════════════════════════════════════════════════════════
-local MainTab = Window:CreateTab("🏠 Principal", 4483362458)
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local runService = game:GetService("RunService")
+local userInputService = game:GetService("UserInputService")
 
-local MainSection = MainTab:CreateSection("Bienvenue")
+local aimEnabled = false
+local aimbotFOV = 100
+local aimbotSmoothness = 0.5
+local espEnabled = false
+local wallhackEnabled = false
+local recoilEnabled = false
+local triggerEnabled = false
+local radarEnabled = false
 
-Rayfield:Notify({
-    Title = "Interface Chargée",
-    Content = "Bienvenue dans votre hub Roblox!",
-    Duration = 6.5,
-    Image = 4483362458,
-})
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = aimbotFOV
+    
+    for _, v in pairs(game.Players:GetPlayers()) do
+        if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
+            local head = v.Character.Head
+            local screenPoint, onScreen = camera:WorldToScreenPoint(head.Position)
+            
+            if onScreen then
+                local mousePos = userInputService:GetMouseLocation()
+                local distance = (Vector2.new(screenPoint.X, screenPoint.Y) - mousePos).Magnitude
+                
+                if distance < shortestDistance then
+                    closestPlayer = v
+                    shortestDistance = distance
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
 
-MainTab:CreateLabel("Voici votre interface de contrôle principale")
+local CombatTab = Window:CreateTab("Combat", 4483362458)
 
-local Button = MainTab:CreateButton({
-    Name = "🚀 Cliquez-moi!",
-    Callback = function()
-        Rayfield:Notify({
-            Title = "Bouton Cliqué",
-            Content = "Vous avez cliqué sur le bouton!",
-            Duration = 3,
-        })
+CombatTab:CreateSection("Aim Assist")
+
+local AimbotToggle = CombatTab:CreateToggle({
+    Name = "Aimbot",
+    CurrentValue = false,
+    Flag = "Aimbot",
+    Callback = function(Value)
+        aimEnabled = Value
     end,
 })
 
-local Toggle = MainTab:CreateToggle({
-    Name = "🔄 Mode Automatique",
-    CurrentValue = false,
-    Flag = "AutoMode",
+local FOVSlider = CombatTab:CreateSlider({
+    Name = "Aimbot FOV",
+    Range = {50, 500},
+    Increment = 10,
+    Suffix = "px",
+    CurrentValue = 100,
+    Flag = "AimbotFOV",
     Callback = function(Value)
-        print("Mode Automatique:", Value)
+        aimbotFOV = Value
+    end,
+})
+
+local SmoothnessSlider = CombatTab:CreateSlider({
+    Name = "Smoothness",
+    Range = {0, 1},
+    Increment = 0.05,
+    Suffix = "",
+    CurrentValue = 0.5,
+    Flag = "AimbotSmooth",
+    Callback = function(Value)
+        aimbotSmoothness = Value
+    end,
+})
+
+local TriggerBot = CombatTab:CreateToggle({
+    Name = "Triggerbot",
+    CurrentValue = false,
+    Flag = "Triggerbot",
+    Callback = function(Value)
+        triggerEnabled = Value
+    end,
+})
+
+CombatTab:CreateSection("Weapon Mods")
+
+local NoRecoil = CombatTab:CreateToggle({
+    Name = "No Recoil",
+    CurrentValue = false,
+    Flag = "NoRecoil",
+    Callback = function(Value)
+        recoilEnabled = Value
+    end,
+})
+
+local InfiniteAmmo = CombatTab:CreateToggle({
+    Name = "Infinite Ammo",
+    CurrentValue = false,
+    Flag = "InfiniteAmmo",
+    Callback = function(Value)
         if Value then
-            Rayfield:Notify({
-                Title = "Mode Auto Activé",
-                Content = "Le mode automatique est maintenant actif",
-                Duration = 3,
-            })
+            _G.InfiniteAmmoLoop = runService.Heartbeat:Connect(function()
+                local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+                if tool then
+                    local ammo = tool:FindFirstChild("Ammo")
+                    if ammo and ammo:IsA("IntValue") then
+                        ammo.Value = 999
+                    end
+                end
+            end)
+        else
+            if _G.InfiniteAmmoLoop then
+                _G.InfiniteAmmoLoop:Disconnect()
+            end
         end
     end,
 })
 
-local Slider = MainTab:CreateSlider({
-    Name = "⚡ Vitesse de Marche",
-    Range = {16, 100},
+local RapidFire = CombatTab:CreateToggle({
+    Name = "Rapid Fire",
+    CurrentValue = false,
+    Flag = "RapidFire",
+    Callback = function(Value)
+        if Value then
+            _G.RapidFireLoop = runService.Heartbeat:Connect(function()
+                local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
+                if tool then
+                    local fireRate = tool:FindFirstChild("FireRate")
+                    if fireRate and fireRate:IsA("NumberValue") then
+                        fireRate.Value = 0.01
+                    end
+                end
+            end)
+        else
+            if _G.RapidFireLoop then
+                _G.RapidFireLoop:Disconnect()
+            end
+        end
+    end,
+})
+
+local VisualTab = Window:CreateTab("Visuals", 4483362458)
+
+VisualTab:CreateSection("ESP")
+
+local PlayerESP = VisualTab:CreateToggle({
+    Name = "Player ESP",
+    CurrentValue = false,
+    Flag = "PlayerESP",
+    Callback = function(Value)
+        espEnabled = Value
+        if Value then
+            for _, v in pairs(game.Players:GetPlayers()) do
+                if v ~= player and v.Character then
+                    local highlight = Instance.new("Highlight")
+                    highlight.Name = "ESP"
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    highlight.FillTransparency = 0.5
+                    highlight.OutlineTransparency = 0
+                    highlight.Parent = v.Character
+                end
+            end
+        else
+            for _, v in pairs(game.Players:GetPlayers()) do
+                if v.Character and v.Character:FindFirstChild("ESP") then
+                    v.Character.ESP:Destroy()
+                end
+            end
+        end
+    end,
+})
+
+local BoxESP = VisualTab:CreateToggle({
+    Name = "Box ESP",
+    CurrentValue = false,
+    Flag = "BoxESP",
+    Callback = function(Value)
+        print("Box ESP:", Value)
+    end,
+})
+
+local HealthESP = VisualTab:CreateToggle({
+    Name = "Health Bar",
+    CurrentValue = false,
+    Flag = "HealthESP",
+    Callback = function(Value)
+        print("Health ESP:", Value)
+    end,
+})
+
+local DistanceESP = VisualTab:CreateToggle({
+    Name = "Distance",
+    CurrentValue = false,
+    Flag = "DistanceESP",
+    Callback = function(Value)
+        print("Distance ESP:", Value)
+    end,
+})
+
+VisualTab:CreateSection("World")
+
+local Wallhack = VisualTab:CreateToggle({
+    Name = "Wallhack",
+    CurrentValue = false,
+    Flag = "Wallhack",
+    Callback = function(Value)
+        wallhackEnabled = Value
+        if Value then
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") and v.Name == "Wall" or v.Name == "Part" then
+                    v.Transparency = 0.8
+                end
+            end
+        else
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Transparency = 0
+                end
+            end
+        end
+    end,
+})
+
+local Fullbright = VisualTab:CreateToggle({
+    Name = "Fullbright",
+    CurrentValue = false,
+    Flag = "Fullbright",
+    Callback = function(Value)
+        if Value then
+            game:GetService("Lighting").Brightness = 2
+            game:GetService("Lighting").ClockTime = 14
+            game:GetService("Lighting").FogEnd = 100000
+            game:GetService("Lighting").GlobalShadows = false
+            game:GetService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+        else
+            game:GetService("Lighting").Brightness = 1
+            game:GetService("Lighting").ClockTime = 12
+            game:GetService("Lighting").FogEnd = 100000
+            game:GetService("Lighting").GlobalShadows = true
+        end
+    end,
+})
+
+local FOVChanger = VisualTab:CreateSlider({
+    Name = "Field of View",
+    Range = {70, 120},
     Increment = 1,
-    Suffix = " vitesse",
+    Suffix = "°",
+    CurrentValue = 70,
+    Flag = "FOV",
+    Callback = function(Value)
+        camera.FieldOfView = Value
+    end,
+})
+
+local Radar = VisualTab:CreateToggle({
+    Name = "Radar",
+    CurrentValue = false,
+    Flag = "Radar",
+    Callback = function(Value)
+        radarEnabled = Value
+    end,
+})
+
+local MovementTab = Window:CreateTab("Movement", 4483362458)
+
+MovementTab:CreateSection("Speed")
+
+local SpeedHack = MovementTab:CreateToggle({
+    Name = "Speed Hack",
+    CurrentValue = false,
+    Flag = "SpeedHack",
+    Callback = function(Value)
+        if Value then
+            player.Character.Humanoid.WalkSpeed = 50
+        else
+            player.Character.Humanoid.WalkSpeed = 16
+        end
+    end,
+})
+
+local SpeedSlider = MovementTab:CreateSlider({
+    Name = "Walk Speed",
+    Range = {16, 200},
+    Increment = 1,
+    Suffix = "",
     CurrentValue = 16,
-    Flag = "SpeedSlider",
+    Flag = "WalkSpeed",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        player.Character.Humanoid.WalkSpeed = Value
     end,
 })
 
-local Input = MainTab:CreateInput({
-    Name = "📝 Entrez votre nom",
-    PlaceholderText = "Votre nom ici...",
-    RemoveTextAfterFocusLost = false,
-    Callback = function(Text)
-        print("Nom entré:", Text)
-        Rayfield:Notify({
-            Title = "Nom Enregistré",
-            Content = "Bonjour " .. Text .. "!",
-            Duration = 3,
-        })
+local JumpPower = MovementTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 200},
+    Increment = 1,
+    Suffix = "",
+    CurrentValue = 50,
+    Flag = "JumpPower",
+    Callback = function(Value)
+        player.Character.Humanoid.JumpPower = Value
     end,
 })
 
--- ═══════════════════════════════════════════════════════════════
--- TAB 2: JOUEUR
--- ═══════════════════════════════════════════════════════════════
-local PlayerTab = Window:CreateTab("👤 Joueur", 4483362458)
+MovementTab:CreateSection("Physics")
 
-local PlayerSection = PlayerTab:CreateSection("Modifications du Joueur")
-
-local WalkSpeedToggle = PlayerTab:CreateToggle({
-    Name = "🏃 Vitesse Rapide",
+local Fly = MovementTab:CreateToggle({
+    Name = "Fly",
     CurrentValue = false,
-    Flag = "FastSpeed",
+    Flag = "Fly",
     Callback = function(Value)
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+        
         if Value then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+            local BV = Instance.new("BodyVelocity")
+            BV.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            BV.Velocity = Vector3.new(0, 0, 0)
+            BV.Parent = rootPart
+            _G.FlyBV = BV
+            
+            local BG = Instance.new("BodyGyro")
+            BG.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+            BG.P = 10000
+            BG.Parent = rootPart
+            _G.FlyBG = BG
+            
+            _G.FlyConnection = runService.Heartbeat:Connect(function()
+                local moveDirection = Vector3.new()
+                
+                if userInputService:IsKeyDown(Enum.KeyCode.W) then
+                    moveDirection = moveDirection + camera.CFrame.LookVector
+                end
+                if userInputService:IsKeyDown(Enum.KeyCode.S) then
+                    moveDirection = moveDirection - camera.CFrame.LookVector
+                end
+                if userInputService:IsKeyDown(Enum.KeyCode.A) then
+                    moveDirection = moveDirection - camera.CFrame.RightVector
+                end
+                if userInputService:IsKeyDown(Enum.KeyCode.D) then
+                    moveDirection = moveDirection + camera.CFrame.RightVector
+                end
+                
+                BV.Velocity = moveDirection * 50
+                BG.CFrame = camera.CFrame
+            end)
         else
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+            if _G.FlyConnection then _G.FlyConnection:Disconnect() end
+            if _G.FlyBV then _G.FlyBV:Destroy() end
+            if _G.FlyBG then _G.FlyBG:Destroy() end
         end
     end,
 })
 
-local JumpPowerToggle = PlayerTab:CreateToggle({
-    Name = "🦘 Super Saut",
-    CurrentValue = false,
-    Flag = "SuperJump",
-    Callback = function(Value)
-        if Value then
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
-        else
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
-        end
-    end,
-})
-
-local NoClipToggle = PlayerTab:CreateToggle({
-    Name = "👻 NoClip (Traverser les murs)",
+local NoClip = MovementTab:CreateToggle({
+    Name = "NoClip",
     CurrentValue = false,
     Flag = "NoClip",
     Callback = function(Value)
-        local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
         
         if Value then
-            _G.NoClipConnection = game:GetService("RunService").Stepped:Connect(function()
+            _G.NoClipConnection = runService.Stepped:Connect(function()
                 for _, part in pairs(character:GetDescendants()) do
                     if part:IsA("BasePart") then
                         part.CanCollide = false
@@ -160,69 +408,63 @@ local NoClipToggle = PlayerTab:CreateToggle({
     end,
 })
 
-local FlyToggle = PlayerTab:CreateToggle({
-    Name = "✈️ Vol",
-    CurrentValue = false,
-    Flag = "Fly",
-    Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        local rootPart = character:WaitForChild("HumanoidRootPart")
-        
-        if Value then
-            local BV = Instance.new("BodyVelocity")
-            BV.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            BV.Velocity = Vector3.new(0, 0, 0)
-            BV.Parent = rootPart
-            _G.FlyBodyVelocity = BV
-            
-            local BG = Instance.new("BodyGyro")
-            BG.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-            BG.P = 10000
-            BG.Parent = rootPart
-            _G.FlyBodyGyro = BG
-            
-            _G.FlyConnection = game:GetService("RunService").Heartbeat:Connect(function()
-                local camera = workspace.CurrentCamera
-                local moveDirection = Vector3.new()
-                
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.W) then
-                    moveDirection = moveDirection + camera.CFrame.LookVector
-                end
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.S) then
-                    moveDirection = moveDirection - camera.CFrame.LookVector
-                end
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.A) then
-                    moveDirection = moveDirection - camera.CFrame.RightVector
-                end
-                if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
-                    moveDirection = moveDirection + camera.CFrame.RightVector
-                end
-                
-                BV.Velocity = moveDirection * 50
-                BG.CFrame = camera.CFrame
-            end)
-        else
-            if _G.FlyConnection then
-                _G.FlyConnection:Disconnect()
-            end
-            if _G.FlyBodyVelocity then
-                _G.FlyBodyVelocity:Destroy()
-            end
-            if _G.FlyBodyGyro then
-                _G.FlyBodyGyro:Destroy()
+local TeleportTab = Window:CreateTab("Teleport", 4483362458)
+
+TeleportTab:CreateSection("Quick Teleports")
+
+local function teleportTo(position)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+    rootPart.CFrame = CFrame.new(position)
+end
+
+TeleportTab:CreateButton({
+    Name = "Spawn Point",
+    Callback = function()
+        local spawn = workspace:FindFirstChild("SpawnLocation")
+        if spawn then
+            teleportTo(spawn.Position + Vector3.new(0, 5, 0))
+        end
+    end,
+})
+
+local PlayerDropdown = TeleportTab:CreateDropdown({
+    Name = "Teleport to Player",
+    Options = {},
+    CurrentOption = {"Select Player"},
+    MultipleOptions = false,
+    Flag = "TeleportPlayer",
+    Callback = function(Option)
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p.Name == Option[1] and p.Character then
+                teleportTo(p.Character.HumanoidRootPart.Position)
             end
         end
     end,
 })
 
-local GodModeToggle = PlayerTab:CreateToggle({
-    Name = "🛡️ Mode Dieu",
+task.spawn(function()
+    while true do
+        local names = {}
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p ~= player then
+                table.insert(names, p.Name)
+            end
+        end
+        PlayerDropdown:Refresh(names)
+        task.wait(3)
+    end
+end)
+
+local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+MiscTab:CreateSection("Game")
+
+local GodMode = MiscTab:CreateToggle({
+    Name = "God Mode",
     CurrentValue = false,
     Flag = "GodMode",
     Callback = function(Value)
-        local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
         local humanoid = character:WaitForChild("Humanoid")
         
@@ -236,231 +478,107 @@ local GodModeToggle = PlayerTab:CreateToggle({
     end,
 })
 
--- ═══════════════════════════════════════════════════════════════
--- TAB 3: TÉLÉPORTATION
--- ═══════════════════════════════════════════════════════════════
-local TeleportTab = Window:CreateTab("🌍 Téléportation", 4483362458)
+local AutoRespawn = MiscTab:CreateToggle({
+    Name = "Auto Respawn",
+    CurrentValue = false,
+    Flag = "AutoRespawn",
+    Callback = function(Value)
+        if Value then
+            _G.AutoRespawn = player.CharacterAdded:Connect(function()
+                wait(1)
+                player:LoadCharacter()
+            end)
+        else
+            if _G.AutoRespawn then
+                _G.AutoRespawn:Disconnect()
+            end
+        end
+    end,
+})
 
-local TeleportSection = TeleportTab:CreateSection("Positions Rapides")
-
-local function teleportToPosition(position)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local rootPart = character:WaitForChild("HumanoidRootPart")
-    rootPart.CFrame = CFrame.new(position)
-end
-
-TeleportTab:CreateButton({
-    Name = "📍 Téléporter au Spawn",
+MiscTab:CreateButton({
+    Name = "Remove Kill Barriers",
     Callback = function()
-        local spawnLocation = game:GetService("Workspace"):FindFirstChild("SpawnLocation")
-        if spawnLocation then
-            teleportToPosition(spawnLocation.Position + Vector3.new(0, 5, 0))
-            Rayfield:Notify({
-                Title = "Téléportation",
-                Content = "Téléporté au spawn!",
-                Duration = 2,
-            })
-        end
-    end,
-})
-
-local PlayerDropdown = TeleportTab:CreateDropdown({
-    Name = "🎯 Téléporter vers un joueur",
-    Options = {},
-    CurrentOption = {"Sélectionnez un joueur"},
-    MultipleOptions = false,
-    Flag = "PlayerTeleport",
-    Callback = function(Option)
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player.Name == Option[1] and player.Character then
-                local targetPos = player.Character.HumanoidRootPart.Position
-                teleportToPosition(targetPos + Vector3.new(0, 3, 0))
-                Rayfield:Notify({
-                    Title = "Téléportation",
-                    Content = "Téléporté vers " .. player.Name,
-                    Duration = 2,
-                })
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v.Name == "KillBrick" or v.Name == "DeathBrick" then
+                v:Destroy()
             end
         end
+        Rayfield:Notify({
+            Title = "Kill Barriers",
+            Content = "All kill barriers removed",
+            Duration = 2,
+        })
     end,
 })
 
--- Mise à jour de la liste des joueurs
-task.spawn(function()
-    while true do
-        local playerNames = {}
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer then
-                table.insert(playerNames, player.Name)
-            end
-        end
-        PlayerDropdown:Refresh(playerNames)
-        task.wait(5)
-    end
-end)
+local SettingsTab = Window:CreateTab("Settings", 4483362458)
 
--- ═══════════════════════════════════════════════════════════════
--- TAB 4: VISUEL
--- ═══════════════════════════════════════════════════════════════
-local VisualTab = Window:CreateTab("👁️ Visuel", 4483362458)
+SettingsTab:CreateSection("Configuration")
 
-local VisualSection = VisualTab:CreateSection("Options Visuelles")
-
-local FullbrightToggle = VisualTab:CreateToggle({
-    Name = "💡 Fullbright (Luminosité Max)",
-    CurrentValue = false,
-    Flag = "Fullbright",
-    Callback = function(Value)
-        if Value then
-            game:GetService("Lighting").Brightness = 2
-            game:GetService("Lighting").ClockTime = 14
-            game:GetService("Lighting").FogEnd = 100000
-            game:GetService("Lighting").GlobalShadows = false
-            game:GetService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-        else
-            game:GetService("Lighting").Brightness = 1
-            game:GetService("Lighting").ClockTime = 12
-            game:GetService("Lighting").FogEnd = 100000
-            game:GetService("Lighting").GlobalShadows = true
-        end
-    end,
-})
-
-local ESPToggle = VisualTab:CreateToggle({
-    Name = "👤 ESP Joueurs",
-    CurrentValue = false,
-    Flag = "PlayerESP",
-    Callback = function(Value)
-        if Value then
-            _G.ESPEnabled = true
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player ~= game.Players.LocalPlayer and player.Character then
-                    local highlight = Instance.new("Highlight")
-                    highlight.Name = "ESP"
-                    highlight.FillTransparency = 0.5
-                    highlight.OutlineTransparency = 0
-                    highlight.Parent = player.Character
-                end
-            end
-        else
-            _G.ESPEnabled = false
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player.Character and player.Character:FindFirstChild("ESP") then
-                    player.Character.ESP:Destroy()
-                end
-            end
-        end
-    end,
-})
-
-local FOVSlider = VisualTab:CreateSlider({
-    Name = "🔭 Champ de Vision (FOV)",
-    Range = {70, 120},
-    Increment = 1,
-    Suffix = "°",
-    CurrentValue = 70,
-    Flag = "FOVSlider",
-    Callback = function(Value)
-        game.Workspace.CurrentCamera.FieldOfView = Value
-    end,
-})
-
-local ColorPicker = VisualTab:CreateColorPicker({
-    Name = "🎨 Couleur de l'Interface",
-    Color = Color3.fromRGB(255, 255, 255),
-    Flag = "ColorPicker",
-    Callback = function(Value)
-        print("Couleur choisie:", Value)
-    end
-})
-
--- ═══════════════════════════════════════════════════════════════
--- TAB 5: PARAMÈTRES
--- ═══════════════════════════════════════════════════════════════
-local SettingsTab = Window:CreateTab("⚙️ Paramètres", 4483362458)
-
-local SettingsSection = SettingsTab:CreateSection("Configuration")
-
-local Keybind = SettingsTab:CreateKeybind({
-    Name = "🔑 Touche pour Ouvrir/Fermer l'UI",
-    CurrentKeybind = "Q",
+local UIKeybind = SettingsTab:CreateKeybind({
+    Name = "Toggle UI",
+    CurrentKeybind = "RightShift",
     HoldToInteract = false,
-    Flag = "UIToggleKeybind",
+    Flag = "UIKeybind",
     Callback = function(Keybind)
-        print("Keybind changé à:", Keybind)
     end,
 })
 
 SettingsTab:CreateButton({
-    Name = "💾 Sauvegarder la Configuration",
+    Name = "Save Configuration",
     Callback = function()
         Rayfield:Notify({
             Title = "Configuration",
-            Content = "Configuration sauvegardée avec succès!",
-            Duration = 3,
+            Content = "Settings saved successfully",
+            Duration = 2,
         })
     end,
 })
 
 SettingsTab:CreateButton({
-    Name = "🔄 Réinitialiser l'Interface",
+    Name = "Load Configuration",
     Callback = function()
-        Rayfield:Notify({
-            Title = "Réinitialisation",
-            Content = "Interface réinitialisée!",
-            Duration = 3,
-        })
-        -- Recharger l'interface
-        Rayfield:Destroy()
+        Rayfield:LoadConfiguration()
     end,
 })
 
 SettingsTab:CreateButton({
-    Name = "❌ Fermer l'Interface",
+    Name = "Destroy UI",
     Callback = function()
         Rayfield:Destroy()
     end,
 })
 
-SettingsTab:CreateLabel("Version 1.0.0 - Créé avec Rayfield")
+SettingsTab:CreateSection("Info")
+SettingsTab:CreateLabel("TheWizard Hub v1.0")
+SettingsTab:CreateLabel("FPS Game Suite")
 
--- ═══════════════════════════════════════════════════════════════
--- TAB 6: CRÉDITS
--- ═══════════════════════════════════════════════════════════════
-local CreditsTab = Window:CreateTab("ℹ️ Crédits", 4483362458)
+runService.RenderStepped:Connect(function()
+    if aimEnabled then
+        local target = getClosestPlayer()
+        if target and target.Character and target.Character:FindFirstChild("Head") then
+            local targetPos = target.Character.Head.Position
+            local camCFrame = camera.CFrame
+            local targetCFrame = CFrame.new(camCFrame.Position, targetPos)
+            camera.CFrame = camCFrame:Lerp(targetCFrame, aimbotSmoothness)
+        end
+    end
+end)
 
-CreditsTab:CreateSection("À Propos")
+game.Players.PlayerAdded:Connect(function(newPlayer)
+    if espEnabled and newPlayer ~= player then
+        newPlayer.CharacterAdded:Connect(function(character)
+            wait(0.5)
+            local highlight = Instance.new("Highlight")
+            highlight.Name = "ESP"
+            highlight.FillColor = Color3.fromRGB(255, 0, 0)
+            highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+            highlight.FillTransparency = 0.5
+            highlight.OutlineTransparency = 0
+            highlight.Parent = character
+        end)
+    end
+end)
 
-CreditsTab:CreateLabel("Hub créé avec Rayfield UI Library")
-CreditsTab:CreateLabel("Développé par: Votre Nom")
-CreditsTab:CreateLabel("Version: 1.0.0")
-CreditsTab:CreateLabel("Date: 2025")
-
-CreditsTab:CreateButton({
-    Name = "📋 Copier le lien Discord",
-    Callback = function()
-        setclipboard("discord.gg/votre-serveur")
-        Rayfield:Notify({
-            Title = "Lien Copié",
-            Content = "Le lien Discord a été copié dans le presse-papier",
-            Duration = 3,
-        })
-    end,
-})
-
--- ═══════════════════════════════════════════════════════════════
--- INITIALISATION FINALE
--- ═══════════════════════════════════════════════════════════════
-
--- Message de bienvenue final
-Rayfield:Notify({
-    Title = "🎉 Prêt!",
-    Content = "Toutes les fonctionnalités sont maintenant disponibles!",
-    Duration = 5,
-})
-
--- Charger la configuration sauvegardée
 Rayfield:LoadConfiguration()
-
-print("Interface Rayfield chargée avec succès!")
