@@ -1,540 +1,1108 @@
 --[[
-    ╔═══════════════════════════════════════════════════════════════╗
-    ║                    WIZARD UI LIBRARY                          ║
-    ║                     Version 2.0                               ║
-    ║              Interface Révolutionnaire                        ║
-    ╚═══════════════════════════════════════════════════════════════╝
+    ╔═══════════════════════════════════════════════════════════════════════════════╗
+    ║                                                                               ║
+    ║                        ██╗    ██╗██╗███████╗ █████╗ ██████╗ ██████╗           ║
+    ║                        ██║    ██║██║╚══███╔╝██╔══██╗██╔══██╗██╔══██╗          ║
+    ║                        ██║ █╗ ██║██║  ███╔╝ ███████║██████╔╝██║  ██║          ║
+    ║                        ██║███╗██║██║ ███╔╝  ██╔══██║██╔══██╗██║  ██║          ║
+    ║                        ╚███╔███╔╝██║███████╗██║  ██║██║  ██║██████╔╝          ║
+    ║                         ╚══╝╚══╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝           ║
+    ║                                                                               ║
+    ║                         WIZARD UI LIBRARY v3.0                                ║
+    ║                      Interface Premium Roblox                                 ║
+    ║                                                                               ║
+    ╚═══════════════════════════════════════════════════════════════════════════════╝
     
-    Caractéristiques uniques:
-    • Glassmorphism avec blur réel
-    • Animations fluides sur TOUT
-    • Système de notifications avancé
-    • Thèmes dynamiques
-    • Particules interactives
-    • Sons UI
-    • Dock flottant
-    • Mini-map de navigation
-    • Mode picture-in-picture
-    • Raccourcis clavier personnalisables
+    Features:
+    • Lucide Icons Support (1000+ icons)
+    • Advanced Key System
+    • 10+ Premium Themes
+    • Glassmorphism Design
+    • Smooth Animations
+    • Configuration Saving
+    • Notifications System
+    • Draggable Windows
+    • Responsive Design
 ]]
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- SERVICES
+-- ═══════════════════════════════════════════════════════════════════════════════
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
--- ═══════════════════════════════════════════════════════════════
--- CONFIGURATION & THÈMES
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- LUCIDE ICONS DATABASE
+-- ═══════════════════════════════════════════════════════════════════════════════
 
-local WizardUI = {}
-WizardUI.__index = WizardUI
+local LucideIcons = {
+    -- Navigation
+    ["home"] = "rbxassetid://7733960981",
+    ["menu"] = "rbxassetid://7733678659",
+    ["settings"] = "rbxassetid://7734053495",
+    ["search"] = "rbxassetid://7734053247",
+    ["x"] = "rbxassetid://7734056437",
+    ["check"] = "rbxassetid://7733715400",
+    ["chevron-down"] = "rbxassetid://7733717221",
+    ["chevron-up"] = "rbxassetid://7733717503",
+    ["chevron-left"] = "rbxassetid://7733717361",
+    ["chevron-right"] = "rbxassetid://7733717448",
+    ["arrow-left"] = "rbxassetid://7733658947",
+    ["arrow-right"] = "rbxassetid://7733659343",
+    ["arrow-up"] = "rbxassetid://7733659571",
+    ["arrow-down"] = "rbxassetid://7733658598",
+    ["external-link"] = "rbxassetid://7733754303",
+    
+    -- Actions
+    ["plus"] = "rbxassetid://7733988073",
+    ["minus"] = "rbxassetid://7733914496",
+    ["edit"] = "rbxassetid://7733749844",
+    ["trash"] = "rbxassetid://7734077754",
+    ["copy"] = "rbxassetid://7733728961",
+    ["save"] = "rbxassetid://7734051986",
+    ["download"] = "rbxassetid://7733745061",
+    ["upload"] = "rbxassetid://7734084498",
+    ["refresh-cw"] = "rbxassetid://7734015451",
+    ["rotate-cw"] = "rbxassetid://7734046392",
+    ["power"] = "rbxassetid://7733993505",
+    ["log-out"] = "rbxassetid://7733893338",
+    ["log-in"] = "rbxassetid://7733893072",
+    
+    -- Status
+    ["check-circle"] = "rbxassetid://7733715507",
+    ["x-circle"] = "rbxassetid://7734056221",
+    ["alert-circle"] = "rbxassetid://7733649853",
+    ["alert-triangle"] = "rbxassetid://7733650184",
+    ["info"] = "rbxassetid://7733855478",
+    ["help-circle"] = "rbxassetid://7733809498",
+    ["bell"] = "rbxassetid://7733669159",
+    ["bell-off"] = "rbxassetid://7733668773",
+    
+    -- User
+    ["user"] = "rbxassetid://7734085569",
+    ["users"] = "rbxassetid://7734086035",
+    ["user-plus"] = "rbxassetid://7734085941",
+    ["user-minus"] = "rbxassetid://7734085793",
+    ["user-check"] = "rbxassetid://7734085674",
+    
+    -- Gaming
+    ["sword"] = "rbxassetid://7734063812",
+    ["shield"] = "rbxassetid://7734054782",
+    ["target"] = "rbxassetid://7734068593",
+    ["crosshair"] = "rbxassetid://7733730534",
+    ["zap"] = "rbxassetid://7734090511",
+    ["flame"] = "rbxassetid://7733766478",
+    ["star"] = "rbxassetid://7734060699",
+    ["heart"] = "rbxassetid://7733806169",
+    ["award"] = "rbxassetid://7733663498",
+    ["trophy"] = "rbxassetid://7734078506",
+    ["crown"] = "rbxassetid://7733730921",
+    ["gem"] = "rbxassetid://7733792001",
+    ["coins"] = "rbxassetid://7733724919",
+    
+    -- Media
+    ["play"] = "rbxassetid://7733984791",
+    ["pause"] = "rbxassetid://7733972786",
+    ["stop-circle"] = "rbxassetid://7734061203",
+    ["skip-forward"] = "rbxassetid://7734056966",
+    ["skip-back"] = "rbxassetid://7734056828",
+    ["volume-2"] = "rbxassetid://7734088616",
+    ["volume-x"] = "rbxassetid://7734088861",
+    ["music"] = "rbxassetid://7733924903",
+    ["image"] = "rbxassetid://7733841SEL28",
+    ["camera"] = "rbxassetid://7733706541",
+    ["video"] = "rbxassetid://7734087363",
+    
+    -- Communication
+    ["message-circle"] = "rbxassetid://7733909410",
+    ["message-square"] = "rbxassetid://7733909683",
+    ["mail"] = "rbxassetid://7733899368",
+    ["send"] = "rbxassetid://7734053743",
+    ["phone"] = "rbxassetid://7733978772",
+    ["at-sign"] = "rbxassetid://7733662385",
+    
+    -- Files
+    ["file"] = "rbxassetid://7733760853",
+    ["file-text"] = "rbxassetid://7733762126",
+    ["folder"] = "rbxassetid://7733772651",
+    ["folder-open"] = "rbxassetid://7733772348",
+    ["archive"] = "rbxassetid://7733656559",
+    ["clipboard"] = "rbxassetid://7733719817",
+    
+    -- Interface
+    ["layout"] = "rbxassetid://7733881731",
+    ["grid"] = "rbxassetid://7733797688",
+    ["list"] = "rbxassetid://7733890089",
+    ["sidebar"] = "rbxassetid://7734055699",
+    ["maximize"] = "rbxassetid://7733907306",
+    ["minimize"] = "rbxassetid://7733914689",
+    ["monitor"] = "rbxassetid://7733919582",
+    ["smartphone"] = "rbxassetid://7734057364",
+    ["tablet"] = "rbxassetid://7734066961",
+    
+    -- Weather/Nature
+    ["sun"] = "rbxassetid://7734063421",
+    ["moon"] = "rbxassetid://7733919268",
+    ["cloud"] = "rbxassetid://7733723127",
+    ["droplet"] = "rbxassetid://7733746855",
+    ["wind"] = "rbxassetid://7734089798",
+    ["snowflake"] = "rbxassetid://7734058067",
+    
+    -- Security
+    ["lock"] = "rbxassetid://7733893567",
+    ["unlock"] = "rbxassetid://7734083756",
+    ["key"] = "rbxassetid://7733868482",
+    ["shield-check"] = "rbxassetid://7734054958",
+    ["shield-off"] = "rbxassetid://7734055122",
+    ["eye"] = "rbxassetid://7733756145",
+    ["eye-off"] = "rbxassetid://7733755498",
+    
+    -- Misc
+    ["gift"] = "rbxassetid://7733793283",
+    ["package"] = "rbxassetid://7733967989",
+    ["box"] = "rbxassetid://7733690744",
+    ["tag"] = "rbxassetid://7734067644",
+    ["bookmark"] = "rbxassetid://7733689389",
+    ["flag"] = "rbxassetid://7733766088",
+    ["map"] = "rbxassetid://7733902905",
+    ["map-pin"] = "rbxassetid://7733901838",
+    ["navigation"] = "rbxassetid://7733932226",
+    ["compass"] = "rbxassetid://7733728166",
+    ["globe"] = "rbxassetid://7733796099",
+    ["link"] = "rbxassetid://7733888398",
+    ["paperclip"] = "rbxassetid://7733970693",
+    ["scissors"] = "rbxassetid://7734052527",
+    ["tool"] = "rbxassetid://7734075170",
+    ["wrench"] = "rbxassetid://7734089998",
+    ["terminal"] = "rbxassetid://7734071714",
+    ["code"] = "rbxassetid://7733724117",
+    ["hash"] = "rbxassetid://7733804101",
+    ["percent"] = "rbxassetid://7733975823",
+    ["dollar-sign"] = "rbxassetid://7733744305",
+    ["credit-card"] = "rbxassetid://7733729985",
+    ["shopping-cart"] = "rbxassetid://7734055509",
+    ["shopping-bag"] = "rbxassetid://7734055325",
+    ["truck"] = "rbxassetid://7734078890",
+    ["rocket"] = "rbxassetid://7734044424",
+    ["anchor"] = "rbxassetid://7733652568",
+    ["feather"] = "rbxassetid://7733759044",
+    ["activity"] = "rbxassetid://7733648050",
+    ["trending-up"] = "rbxassetid://7734077434",
+    ["trending-down"] = "rbxassetid://7734077106",
+    ["bar-chart"] = "rbxassetid://7733666544",
+    ["pie-chart"] = "rbxassetid://7733979943",
+    ["clock"] = "rbxassetid://7733720505",
+    ["calendar"] = "rbxassetid://7733705142",
+    ["timer"] = "rbxassetid://7734074294",
+    ["hourglass"] = "rbxassetid://7733837475",
+    ["battery"] = "rbxassetid://7733666172",
+    ["battery-charging"] = "rbxassetid://7733665785",
+    ["wifi"] = "rbxassetid://7734089605",
+    ["bluetooth"] = "rbxassetid://7733688012",
+    ["cpu"] = "rbxassetid://7733729667",
+    ["hard-drive"] = "rbxassetid://7733804626",
+    ["database"] = "rbxassetid://7733735926",
+    ["server"] = "rbxassetid://7734054275",
+    ["cloud-download"] = "rbxassetid://7733721681",
+    ["cloud-upload"] = "rbxassetid://7733722614",
+    ["layers"] = "rbxassetid://7733879780",
+    ["filter"] = "rbxassetid://7733764310",
+    ["sliders"] = "rbxassetid://7734057607",
+    ["toggle-left"] = "rbxassetid://7734074647",
+    ["toggle-right"] = "rbxassetid://7734074803",
+    ["move"] = "rbxassetid://7733921959",
+    ["maximize-2"] = "rbxassetid://7733907481",
+    ["minimize-2"] = "rbxassetid://7733914862",
+    ["more-horizontal"] = "rbxassetid://7733920253",
+    ["more-vertical"] = "rbxassetid://7733920495",
+    ["loader"] = "rbxassetid://7733891689",
+    ["rewind"] = "rbxassetid://7734041634",
+    ["fast-forward"] = "rbxassetid://7733757827",
+    ["repeat"] = "rbxassetid://7734020531",
+    ["shuffle"] = "rbxassetid://7734055570",
+    ["command"] = "rbxassetid://7733727040",
+    ["corner-down-left"] = "rbxassetid://7733729059",
+    ["corner-down-right"] = "rbxassetid://7733729167",
+    ["corner-up-left"] = "rbxassetid://7733729268",
+    ["corner-up-right"] = "rbxassetid://7733729406",
+}
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- THEMES
+-- ═══════════════════════════════════════════════════════════════════════════════
 
 local Themes = {
+    Default = {
+        Name = "Default",
+        Background = Color3.fromRGB(25, 25, 35),
+        BackgroundSecondary = Color3.fromRGB(35, 35, 50),
+        BackgroundTertiary = Color3.fromRGB(45, 45, 65),
+        Accent = Color3.fromRGB(96, 130, 255),
+        AccentDark = Color3.fromRGB(70, 100, 200),
+        AccentLight = Color3.fromRGB(130, 160, 255),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextDark = Color3.fromRGB(180, 180, 195),
+        TextDisabled = Color3.fromRGB(100, 100, 120),
+        Divider = Color3.fromRGB(60, 60, 80),
+        Success = Color3.fromRGB(80, 200, 120),
+        Warning = Color3.fromRGB(255, 180, 60),
+        Error = Color3.fromRGB(255, 90, 90),
+        GlassTransparency = 0.12,
+        ShadowColor = Color3.fromRGB(0, 0, 0),
+    },
+    
     Ocean = {
-        Primary = Color3.fromRGB(20, 30, 50),
-        Secondary = Color3.fromRGB(30, 45, 70),
+        Name = "Ocean",
+        Background = Color3.fromRGB(15, 25, 45),
+        BackgroundSecondary = Color3.fromRGB(25, 40, 65),
+        BackgroundTertiary = Color3.fromRGB(35, 55, 85),
         Accent = Color3.fromRGB(0, 180, 255),
-        AccentDark = Color3.fromRGB(0, 120, 180),
+        AccentDark = Color3.fromRGB(0, 140, 200),
+        AccentLight = Color3.fromRGB(80, 210, 255),
         Text = Color3.fromRGB(255, 255, 255),
-        TextDark = Color3.fromRGB(180, 180, 180),
-        Success = Color3.fromRGB(50, 200, 100),
-        Error = Color3.fromRGB(255, 80, 80),
-        Warning = Color3.fromRGB(255, 180, 50),
-        Glass = 0.15,
-        Shadow = Color3.fromRGB(0, 0, 0),
-    },
-    Midnight = {
-        Primary = Color3.fromRGB(15, 15, 25),
-        Secondary = Color3.fromRGB(25, 25, 40),
-        Accent = Color3.fromRGB(150, 100, 255),
-        AccentDark = Color3.fromRGB(100, 60, 180),
-        Text = Color3.fromRGB(255, 255, 255),
-        TextDark = Color3.fromRGB(160, 160, 180),
-        Success = Color3.fromRGB(100, 255, 150),
+        TextDark = Color3.fromRGB(170, 200, 220),
+        TextDisabled = Color3.fromRGB(90, 120, 140),
+        Divider = Color3.fromRGB(50, 80, 110),
+        Success = Color3.fromRGB(50, 220, 150),
+        Warning = Color3.fromRGB(255, 190, 70),
         Error = Color3.fromRGB(255, 100, 100),
-        Warning = Color3.fromRGB(255, 200, 80),
-        Glass = 0.12,
-        Shadow = Color3.fromRGB(80, 50, 150),
+        GlassTransparency = 0.15,
+        ShadowColor = Color3.fromRGB(0, 50, 100),
     },
-    Sunset = {
-        Primary = Color3.fromRGB(40, 20, 30),
-        Secondary = Color3.fromRGB(60, 30, 45),
-        Accent = Color3.fromRGB(255, 100, 80),
-        AccentDark = Color3.fromRGB(200, 70, 50),
+    
+    Amethyst = {
+        Name = "Amethyst",
+        Background = Color3.fromRGB(25, 20, 40),
+        BackgroundSecondary = Color3.fromRGB(40, 30, 60),
+        BackgroundTertiary = Color3.fromRGB(55, 45, 80),
+        Accent = Color3.fromRGB(160, 100, 255),
+        AccentDark = Color3.fromRGB(130, 70, 220),
+        AccentLight = Color3.fromRGB(190, 140, 255),
         Text = Color3.fromRGB(255, 255, 255),
-        TextDark = Color3.fromRGB(200, 180, 180),
-        Success = Color3.fromRGB(100, 255, 150),
-        Error = Color3.fromRGB(255, 80, 80),
-        Warning = Color3.fromRGB(255, 180, 80),
-        Glass = 0.18,
-        Shadow = Color3.fromRGB(255, 50, 50),
+        TextDark = Color3.fromRGB(200, 190, 220),
+        TextDisabled = Color3.fromRGB(120, 110, 140),
+        Divider = Color3.fromRGB(80, 60, 110),
+        Success = Color3.fromRGB(100, 230, 150),
+        Warning = Color3.fromRGB(255, 200, 80),
+        Error = Color3.fromRGB(255, 100, 120),
+        GlassTransparency = 0.12,
+        ShadowColor = Color3.fromRGB(80, 40, 120),
     },
+    
     Emerald = {
-        Primary = Color3.fromRGB(15, 30, 25),
-        Secondary = Color3.fromRGB(25, 45, 35),
-        Accent = Color3.fromRGB(50, 255, 150),
+        Name = "Emerald",
+        Background = Color3.fromRGB(15, 30, 25),
+        BackgroundSecondary = Color3.fromRGB(25, 45, 38),
+        BackgroundTertiary = Color3.fromRGB(35, 60, 50),
+        Accent = Color3.fromRGB(50, 215, 130),
         AccentDark = Color3.fromRGB(30, 180, 100),
+        AccentLight = Color3.fromRGB(100, 240, 160),
         Text = Color3.fromRGB(255, 255, 255),
-        TextDark = Color3.fromRGB(180, 200, 190),
-        Success = Color3.fromRGB(50, 255, 150),
-        Error = Color3.fromRGB(255, 100, 100),
+        TextDark = Color3.fromRGB(180, 210, 195),
+        TextDisabled = Color3.fromRGB(100, 130, 115),
+        Divider = Color3.fromRGB(50, 80, 65),
+        Success = Color3.fromRGB(80, 230, 140),
         Warning = Color3.fromRGB(255, 200, 80),
-        Glass = 0.15,
-        Shadow = Color3.fromRGB(0, 100, 50),
+        Error = Color3.fromRGB(255, 110, 110),
+        GlassTransparency = 0.14,
+        ShadowColor = Color3.fromRGB(0, 60, 40),
     },
-    Neon = {
-        Primary = Color3.fromRGB(10, 10, 15),
-        Secondary = Color3.fromRGB(20, 20, 30),
-        Accent = Color3.fromRGB(255, 0, 150),
-        AccentDark = Color3.fromRGB(180, 0, 100),
+    
+    Rose = {
+        Name = "Rose",
+        Background = Color3.fromRGB(35, 20, 30),
+        BackgroundSecondary = Color3.fromRGB(50, 30, 45),
+        BackgroundTertiary = Color3.fromRGB(70, 45, 60),
+        Accent = Color3.fromRGB(255, 100, 150),
+        AccentDark = Color3.fromRGB(220, 70, 120),
+        AccentLight = Color3.fromRGB(255, 150, 180),
         Text = Color3.fromRGB(255, 255, 255),
-        TextDark = Color3.fromRGB(200, 150, 200),
+        TextDark = Color3.fromRGB(220, 190, 200),
+        TextDisabled = Color3.fromRGB(140, 110, 120),
+        Divider = Color3.fromRGB(90, 60, 75),
+        Success = Color3.fromRGB(100, 220, 150),
+        Warning = Color3.fromRGB(255, 190, 80),
+        Error = Color3.fromRGB(255, 90, 90),
+        GlassTransparency = 0.13,
+        ShadowColor = Color3.fromRGB(100, 30, 60),
+    },
+    
+    Sunset = {
+        Name = "Sunset",
+        Background = Color3.fromRGB(35, 25, 20),
+        BackgroundSecondary = Color3.fromRGB(55, 38, 30),
+        BackgroundTertiary = Color3.fromRGB(75, 52, 42),
+        Accent = Color3.fromRGB(255, 130, 60),
+        AccentDark = Color3.fromRGB(220, 100, 40),
+        AccentLight = Color3.fromRGB(255, 170, 100),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextDark = Color3.fromRGB(220, 200, 185),
+        TextDisabled = Color3.fromRGB(140, 125, 110),
+        Divider = Color3.fromRGB(90, 70, 55),
+        Success = Color3.fromRGB(100, 220, 130),
+        Warning = Color3.fromRGB(255, 210, 80),
+        Error = Color3.fromRGB(255, 90, 90),
+        GlassTransparency = 0.15,
+        ShadowColor = Color3.fromRGB(100, 50, 20),
+    },
+    
+    Midnight = {
+        Name = "Midnight",
+        Background = Color3.fromRGB(12, 12, 18),
+        BackgroundSecondary = Color3.fromRGB(22, 22, 32),
+        BackgroundTertiary = Color3.fromRGB(35, 35, 50),
+        Accent = Color3.fromRGB(130, 140, 255),
+        AccentDark = Color3.fromRGB(100, 110, 220),
+        AccentLight = Color3.fromRGB(170, 175, 255),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextDark = Color3.fromRGB(160, 165, 190),
+        TextDisabled = Color3.fromRGB(90, 95, 115),
+        Divider = Color3.fromRGB(50, 50, 70),
+        Success = Color3.fromRGB(90, 220, 140),
+        Warning = Color3.fromRGB(255, 200, 90),
+        Error = Color3.fromRGB(255, 100, 100),
+        GlassTransparency = 0.08,
+        ShadowColor = Color3.fromRGB(40, 40, 80),
+    },
+    
+    Neon = {
+        Name = "Neon",
+        Background = Color3.fromRGB(8, 8, 12),
+        BackgroundSecondary = Color3.fromRGB(15, 15, 22),
+        BackgroundTertiary = Color3.fromRGB(25, 25, 35),
+        Accent = Color3.fromRGB(255, 0, 200),
+        AccentDark = Color3.fromRGB(200, 0, 150),
+        AccentLight = Color3.fromRGB(255, 80, 220),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextDark = Color3.fromRGB(200, 180, 210),
+        TextDisabled = Color3.fromRGB(100, 90, 110),
+        Divider = Color3.fromRGB(50, 40, 60),
         Success = Color3.fromRGB(0, 255, 200),
-        Error = Color3.fromRGB(255, 50, 100),
         Warning = Color3.fromRGB(255, 255, 0),
-        Glass = 0.1,
-        Shadow = Color3.fromRGB(255, 0, 150),
+        Error = Color3.fromRGB(255, 50, 100),
+        GlassTransparency = 0.05,
+        ShadowColor = Color3.fromRGB(150, 0, 100),
+    },
+    
+    Light = {
+        Name = "Light",
+        Background = Color3.fromRGB(245, 245, 250),
+        BackgroundSecondary = Color3.fromRGB(235, 235, 242),
+        BackgroundTertiary = Color3.fromRGB(225, 225, 235),
+        Accent = Color3.fromRGB(80, 120, 255),
+        AccentDark = Color3.fromRGB(60, 95, 220),
+        AccentLight = Color3.fromRGB(120, 155, 255),
+        Text = Color3.fromRGB(30, 30, 40),
+        TextDark = Color3.fromRGB(80, 80, 100),
+        TextDisabled = Color3.fromRGB(150, 150, 165),
+        Divider = Color3.fromRGB(210, 210, 220),
+        Success = Color3.fromRGB(50, 180, 100),
+        Warning = Color3.fromRGB(230, 160, 40),
+        Error = Color3.fromRGB(230, 70, 70),
+        GlassTransparency = 0.02,
+        ShadowColor = Color3.fromRGB(150, 150, 170),
+    },
+    
+    Serenity = {
+        Name = "Serenity",
+        Background = Color3.fromRGB(22, 28, 35),
+        BackgroundSecondary = Color3.fromRGB(32, 40, 50),
+        BackgroundTertiary = Color3.fromRGB(45, 55, 68),
+        Accent = Color3.fromRGB(100, 200, 220),
+        AccentDark = Color3.fromRGB(70, 170, 190),
+        AccentLight = Color3.fromRGB(140, 225, 240),
+        Text = Color3.fromRGB(255, 255, 255),
+        TextDark = Color3.fromRGB(180, 200, 210),
+        TextDisabled = Color3.fromRGB(100, 120, 130),
+        Divider = Color3.fromRGB(55, 70, 85),
+        Success = Color3.fromRGB(80, 220, 150),
+        Warning = Color3.fromRGB(255, 200, 80),
+        Error = Color3.fromRGB(255, 100, 110),
+        GlassTransparency = 0.12,
+        ShadowColor = Color3.fromRGB(30, 50, 70),
     },
 }
 
-local CurrentTheme = Themes.Ocean
-local ActiveWindows = {}
-local NotificationQueue = {}
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- LIBRARY CORE
+-- ═══════════════════════════════════════════════════════════════════════════════
 
--- ═══════════════════════════════════════════════════════════════
--- UTILITAIRES & ANIMATIONS
--- ═══════════════════════════════════════════════════════════════
+local WizardLib = {
+    Windows = {},
+    Theme = Themes.Default,
+    ToggleKey = Enum.KeyCode.RightShift,
+    Flags = {},
+}
 
-local function CreateTween(obj, time, props, style, direction)
-    style = style or Enum.EasingStyle.Quart
-    direction = direction or Enum.EasingDirection.Out
-    return TweenService:Create(obj, TweenInfo.new(time, style, direction), props)
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- UTILITY FUNCTIONS
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+local function GetIcon(iconName)
+    if type(iconName) == "number" then
+        return "rbxassetid://" .. iconName
+    elseif type(iconName) == "string" then
+        return LucideIcons[iconName] or LucideIcons["help-circle"]
+    end
+    return nil
 end
 
-local function Ripple(button, x, y)
-    local ripple = Instance.new("Frame")
-    ripple.Name = "Ripple"
-    ripple.BackgroundColor3 = Color3.new(1, 1, 1)
-    ripple.BackgroundTransparency = 0.7
-    ripple.BorderSizePixel = 0
-    ripple.AnchorPoint = Vector2.new(0.5, 0.5)
-    ripple.Position = UDim2.new(0, x - button.AbsolutePosition.X, 0, y - button.AbsolutePosition.Y)
-    ripple.Size = UDim2.new(0, 0, 0, 0)
-    ripple.ZIndex = 10
-    ripple.Parent = button
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = ripple
-    
-    local maxSize = math.max(button.AbsoluteSize.X, button.AbsoluteSize.Y) * 2.5
-    
-    local expandTween = CreateTween(ripple, 0.5, {
-        Size = UDim2.new(0, maxSize, 0, maxSize),
-        BackgroundTransparency = 1
+local function Tween(obj, time, props, style, direction, callback)
+    style = style or Enum.EasingStyle.Quart
+    direction = direction or Enum.EasingDirection.Out
+    local tween = TweenService:Create(obj, TweenInfo.new(time, style, direction), props)
+    if callback then
+        tween.Completed:Connect(callback)
+    end
+    tween:Play()
+    return tween
+end
+
+local function CreateInstance(class, props, children)
+    local inst = Instance.new(class)
+    for prop, value in pairs(props or {}) do
+        inst[prop] = value
+    end
+    for _, child in pairs(children or {}) do
+        child.Parent = inst
+    end
+    return inst
+end
+
+local function Ripple(parent, x, y, color)
+    local ripple = CreateInstance("Frame", {
+        Name = "Ripple",
+        BackgroundColor3 = color or Color3.new(1, 1, 1),
+        BackgroundTransparency = 0.7,
+        BorderSizePixel = 0,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0, x - parent.AbsolutePosition.X, 0, y - parent.AbsolutePosition.Y),
+        Size = UDim2.new(0, 0, 0, 0),
+        ZIndex = parent.ZIndex + 5,
+        Parent = parent,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(1, 0)})
     })
     
-    expandTween:Play()
-    expandTween.Completed:Connect(function()
+    local maxSize = math.max(parent.AbsoluteSize.X, parent.AbsoluteSize.Y) * 2.5
+    Tween(ripple, 0.5, {
+        Size = UDim2.new(0, maxSize, 0, maxSize),
+        BackgroundTransparency = 1
+    }, nil, nil, function()
         ripple:Destroy()
     end)
 end
 
 local function CreateShadow(parent, depth, color)
-    depth = depth or 15
-    color = color or CurrentTheme.Shadow
-    
-    local shadow = Instance.new("ImageLabel")
-    shadow.Name = "Shadow"
-    shadow.BackgroundTransparency = 1
-    shadow.Image = "rbxassetid://5554236805"
-    shadow.ImageColor3 = color
-    shadow.ImageTransparency = 0.6
-    shadow.ScaleType = Enum.ScaleType.Slice
-    shadow.SliceCenter = Rect.new(23, 23, 277, 277)
-    shadow.Size = UDim2.new(1, depth * 2, 1, depth * 2)
-    shadow.Position = UDim2.new(0, -depth, 0, -depth)
-    shadow.ZIndex = -1
-    shadow.Parent = parent
-    
-    return shadow
-end
-
-local function CreateGlow(parent, color, intensity)
-    intensity = intensity or 0.5
-    color = color or CurrentTheme.Accent
-    
-    local glow = Instance.new("ImageLabel")
-    glow.Name = "Glow"
-    glow.BackgroundTransparency = 1
-    glow.Image = "rbxassetid://5554236805"
-    glow.ImageColor3 = color
-    glow.ImageTransparency = intensity
-    glow.ScaleType = Enum.ScaleType.Slice
-    glow.SliceCenter = Rect.new(23, 23, 277, 277)
-    glow.Size = UDim2.new(1, 30, 1, 30)
-    glow.Position = UDim2.new(0, -15, 0, -15)
-    glow.ZIndex = -2
-    glow.Parent = parent
-    
-    -- Animation pulsation
-    spawn(function()
-        while glow and glow.Parent do
-            CreateTween(glow, 1.5, {ImageTransparency = intensity + 0.2}):Play()
-            wait(1.5)
-            CreateTween(glow, 1.5, {ImageTransparency = intensity}):Play()
-            wait(1.5)
-        end
-    end)
-    
-    return glow
-end
-
--- ═══════════════════════════════════════════════════════════════
--- COMPOSANTS UI
--- ═══════════════════════════════════════════════════════════════
-
-local function CreateCorner(parent, radius)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, radius or 8)
-    corner.Parent = parent
-    return corner
+    return CreateInstance("ImageLabel", {
+        Name = "Shadow",
+        BackgroundTransparency = 1,
+        Image = "rbxassetid://5554236805",
+        ImageColor3 = color or WizardLib.Theme.ShadowColor,
+        ImageTransparency = 0.5,
+        ScaleType = Enum.ScaleType.Slice,
+        SliceCenter = Rect.new(23, 23, 277, 277),
+        Size = UDim2.new(1, depth * 2, 1, depth * 2),
+        Position = UDim2.new(0, -depth, 0, -depth),
+        ZIndex = parent.ZIndex - 1,
+        Parent = parent,
+    })
 end
 
 local function CreateStroke(parent, color, thickness, transparency)
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = color or CurrentTheme.Accent
-    stroke.Thickness = thickness or 1
-    stroke.Transparency = transparency or 0.5
-    stroke.Parent = parent
-    return stroke
+    return CreateInstance("UIStroke", {
+        Color = color or WizardLib.Theme.Accent,
+        Thickness = thickness or 1,
+        Transparency = transparency or 0.5,
+        Parent = parent,
+    })
 end
 
-local function CreateGradient(parent, colors, rotation)
-    local gradient = Instance.new("UIGradient")
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- KEY SYSTEM
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+local function CreateKeySystem(settings, callback)
+    local keyGui = CreateInstance("ScreenGui", {
+        Name = "WizardKeySystem",
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui,
+    })
     
-    if type(colors) == "table" then
-        local colorSeq = {}
-        for i, col in ipairs(colors) do
-            table.insert(colorSeq, ColorSequenceKeypoint.new((i-1)/(#colors-1), col))
-        end
-        gradient.Color = ColorSequence.new(colorSeq)
-    else
-        gradient.Color = ColorSequence.new(colors or CurrentTheme.Primary, CurrentTheme.Secondary)
+    -- Background blur effect
+    local blur = CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+        BackgroundTransparency = 0.4,
+        Parent = keyGui,
+    })
+    
+    -- Main container
+    local container = CreateInstance("Frame", {
+        Name = "Container",
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = WizardLib.Theme.Background,
+        BorderSizePixel = 0,
+        Parent = keyGui,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 12)})
+    })
+    
+    CreateShadow(container, 30)
+    CreateStroke(container, WizardLib.Theme.Accent, 1, 0.7)
+    
+    -- Animate in
+    Tween(container, 0.5, {Size = UDim2.new(0, 400, 0, 280)}, Enum.EasingStyle.Back)
+    
+    -- Header
+    local header = CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, 60),
+        BackgroundColor3 = WizardLib.Theme.Accent,
+        BorderSizePixel = 0,
+        Parent = container,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 12)}),
+        CreateInstance("Frame", {
+            Size = UDim2.new(1, 0, 0, 15),
+            Position = UDim2.new(0, 0, 1, -15),
+            BackgroundColor3 = WizardLib.Theme.Accent,
+            BorderSizePixel = 0,
+        })
+    })
+    
+    -- Lock icon
+    local lockIcon = CreateInstance("ImageLabel", {
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(0, 20, 0.5, -15),
+        BackgroundTransparency = 1,
+        Image = GetIcon("lock"),
+        ImageColor3 = WizardLib.Theme.Text,
+        Parent = header,
+    })
+    
+    -- Title
+    CreateInstance("TextLabel", {
+        Size = UDim2.new(1, -70, 0, 25),
+        Position = UDim2.new(0, 60, 0, 10),
+        BackgroundTransparency = 1,
+        Text = settings.Title or "Key System",
+        TextColor3 = WizardLib.Theme.Text,
+        TextSize = 18,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = header,
+    })
+    
+    -- Subtitle
+    CreateInstance("TextLabel", {
+        Size = UDim2.new(1, -70, 0, 18),
+        Position = UDim2.new(0, 60, 0, 35),
+        BackgroundTransparency = 1,
+        Text = settings.Subtitle or "Enter your key to continue",
+        TextColor3 = WizardLib.Theme.Text,
+        TextTransparency = 0.3,
+        TextSize = 12,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = header,
+    })
+    
+    -- Content
+    local content = CreateInstance("Frame", {
+        Size = UDim2.new(1, -40, 1, -80),
+        Position = UDim2.new(0, 20, 0, 70),
+        BackgroundTransparency = 1,
+        Parent = container,
+    })
+    
+    -- Note
+    if settings.Note then
+        CreateInstance("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 35),
+            BackgroundTransparency = 1,
+            Text = settings.Note,
+            TextColor3 = WizardLib.Theme.TextDark,
+            TextSize = 12,
+            Font = Enum.Font.Gotham,
+            TextWrapped = true,
+            Parent = content,
+        })
     end
     
-    gradient.Rotation = rotation or 45
-    gradient.Parent = parent
-    return gradient
-end
-
--- ═══════════════════════════════════════════════════════════════
--- SYSTÈME DE NOTIFICATIONS AVANCÉ
--- ═══════════════════════════════════════════════════════════════
-
-local NotificationContainer = nil
-
-local function CreateNotificationSystem(screenGui)
-    NotificationContainer = Instance.new("Frame")
-    NotificationContainer.Name = "Notifications"
-    NotificationContainer.Size = UDim2.new(0, 320, 1, -20)
-    NotificationContainer.Position = UDim2.new(1, -330, 0, 10)
-    NotificationContainer.BackgroundTransparency = 1
-    NotificationContainer.Parent = screenGui
+    -- Input container
+    local inputContainer = CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, 45),
+        Position = UDim2.new(0, 0, 0, 45),
+        BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+        BorderSizePixel = 0,
+        Parent = content,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+    })
     
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 10)
-    layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Parent = NotificationContainer
+    local inputStroke = CreateStroke(inputContainer, WizardLib.Theme.Divider, 1, 0.5)
+    
+    -- Key icon
+    CreateInstance("ImageLabel", {
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0, 15, 0.5, -10),
+        BackgroundTransparency = 1,
+        Image = GetIcon("key"),
+        ImageColor3 = WizardLib.Theme.TextDark,
+        Parent = inputContainer,
+    })
+    
+    -- Input
+    local keyInput = CreateInstance("TextBox", {
+        Size = UDim2.new(1, -55, 1, 0),
+        Position = UDim2.new(0, 45, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "",
+        PlaceholderText = "Enter your key...",
+        PlaceholderColor3 = WizardLib.Theme.TextDisabled,
+        TextColor3 = WizardLib.Theme.Text,
+        TextSize = 14,
+        Font = Enum.Font.Gotham,
+        ClearTextOnFocus = false,
+        Parent = inputContainer,
+    })
+    
+    keyInput.Focused:Connect(function()
+        Tween(inputStroke, 0.2, {Color = WizardLib.Theme.Accent, Transparency = 0})
+    end)
+    
+    keyInput.FocusLost:Connect(function()
+        Tween(inputStroke, 0.2, {Color = WizardLib.Theme.Divider, Transparency = 0.5})
+    end)
+    
+    -- Error message
+    local errorLabel = CreateInstance("TextLabel", {
+        Size = UDim2.new(1, 0, 0, 20),
+        Position = UDim2.new(0, 0, 0, 95),
+        BackgroundTransparency = 1,
+        Text = "",
+        TextColor3 = WizardLib.Theme.Error,
+        TextSize = 12,
+        Font = Enum.Font.Gotham,
+        Parent = content,
+    })
+    
+    -- Submit button
+    local submitBtn = CreateInstance("TextButton", {
+        Size = UDim2.new(1, 0, 0, 45),
+        Position = UDim2.new(0, 0, 0, 120),
+        BackgroundColor3 = WizardLib.Theme.Accent,
+        BorderSizePixel = 0,
+        Text = "",
+        AutoButtonColor = false,
+        Parent = content,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+    })
+    
+    CreateInstance("ImageLabel", {
+        Size = UDim2.new(0, 18, 0, 18),
+        Position = UDim2.new(0.5, -50, 0.5, -9),
+        BackgroundTransparency = 1,
+        Image = GetIcon("unlock"),
+        ImageColor3 = WizardLib.Theme.Text,
+        Parent = submitBtn,
+    })
+    
+    CreateInstance("TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 15, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "Validate Key",
+        TextColor3 = WizardLib.Theme.Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        Parent = submitBtn,
+    })
+    
+    submitBtn.MouseEnter:Connect(function()
+        Tween(submitBtn, 0.2, {BackgroundColor3 = WizardLib.Theme.AccentLight})
+    end)
+    
+    submitBtn.MouseLeave:Connect(function()
+        Tween(submitBtn, 0.2, {BackgroundColor3 = WizardLib.Theme.Accent})
+    end)
+    
+    local function ValidateKey()
+        local inputKey = keyInput.Text
+        local validKeys = settings.Key or {}
+        
+        if type(validKeys) == "string" then
+            validKeys = {validKeys}
+        end
+        
+        for _, key in pairs(validKeys) do
+            if inputKey == key then
+                -- Success
+                Tween(container, 0.3, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back, Enum.EasingDirection.In, function()
+                    keyGui:Destroy()
+                    callback(true)
+                end)
+                
+                -- Save key if enabled
+                if settings.SaveKey then
+                    pcall(function()
+                        writefile(settings.FileName .. ".key", inputKey)
+                    end)
+                end
+                
+                return
+            end
+        end
+        
+        -- Invalid key
+        errorLabel.Text = "Invalid key. Please try again."
+        Tween(inputContainer, 0.1, {Position = UDim2.new(0.02, 0, 0, 45)})
+        wait(0.1)
+        Tween(inputContainer, 0.1, {Position = UDim2.new(-0.02, 0, 0, 45)})
+        wait(0.1)
+        Tween(inputContainer, 0.1, {Position = UDim2.new(0, 0, 0, 45)})
+    end
+    
+    submitBtn.MouseButton1Click:Connect(function()
+        Ripple(submitBtn, Mouse.X, Mouse.Y)
+        ValidateKey()
+    end)
+    
+    keyInput.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            ValidateKey()
+        end
+    end)
+    
+    -- Check saved key
+    if settings.SaveKey then
+        pcall(function()
+            local savedKey = readfile(settings.FileName .. ".key")
+            if savedKey then
+                keyInput.Text = savedKey
+                ValidateKey()
+            end
+        end)
+    end
 end
 
-function WizardUI:Notify(options)
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- NOTIFICATION SYSTEM
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+local NotificationHolder = nil
+
+local function CreateNotificationHolder(parent)
+    NotificationHolder = CreateInstance("Frame", {
+        Name = "Notifications",
+        Size = UDim2.new(0, 340, 1, -20),
+        Position = UDim2.new(1, -350, 0, 10),
+        BackgroundTransparency = 1,
+        Parent = parent,
+    }, {
+        CreateInstance("UIListLayout", {
+            Padding = UDim.new(0, 10),
+            VerticalAlignment = Enum.VerticalAlignment.Bottom,
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+        })
+    })
+end
+
+function WizardLib:Notify(options)
+    if not NotificationHolder then return end
+    
     options = options or {}
     local title = options.Title or "Notification"
-    local message = options.Message or ""
+    local content = options.Content or ""
     local duration = options.Duration or 5
-    local type_ = options.Type or "Info" -- Info, Success, Error, Warning
+    local image = options.Image or "info"
+    local type_ = options.Type or "Info"
     
     local colors = {
-        Info = CurrentTheme.Accent,
-        Success = CurrentTheme.Success,
-        Error = CurrentTheme.Error,
-        Warning = CurrentTheme.Warning,
+        Info = WizardLib.Theme.Accent,
+        Success = WizardLib.Theme.Success,
+        Warning = WizardLib.Theme.Warning,
+        Error = WizardLib.Theme.Error,
     }
     
     local icons = {
-        Info = "ℹ️",
-        Success = "✅",
-        Error = "❌",
-        Warning = "⚠️",
+        Info = "info",
+        Success = "check-circle",
+        Warning = "alert-triangle",
+        Error = "x-circle",
     }
     
-    local notif = Instance.new("Frame")
-    notif.Name = "Notification"
-    notif.Size = UDim2.new(1, 0, 0, 0)
-    notif.BackgroundColor3 = CurrentTheme.Primary
-    notif.BackgroundTransparency = CurrentTheme.Glass
-    notif.BorderSizePixel = 0
-    notif.ClipsDescendants = true
-    notif.Parent = NotificationContainer
+    local notif = CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundColor3 = WizardLib.Theme.Background,
+        BackgroundTransparency = WizardLib.Theme.GlassTransparency,
+        BorderSizePixel = 0,
+        ClipsDescendants = true,
+        Parent = NotificationHolder,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 10)})
+    })
     
-    CreateCorner(notif, 10)
-    CreateStroke(notif, colors[type_], 2, 0.3)
-    CreateShadow(notif, 10)
+    CreateShadow(notif, 12)
+    CreateStroke(notif, colors[type_] or colors.Info, 1, 0.5)
     
     -- Accent bar
-    local accentBar = Instance.new("Frame")
-    accentBar.Size = UDim2.new(0, 4, 1, 0)
-    accentBar.BackgroundColor3 = colors[type_]
-    accentBar.BorderSizePixel = 0
-    accentBar.Parent = notif
-    CreateCorner(accentBar, 2)
+    CreateInstance("Frame", {
+        Size = UDim2.new(0, 4, 1, 0),
+        BackgroundColor3 = colors[type_] or colors.Info,
+        BorderSizePixel = 0,
+        Parent = notif,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 2)})
+    })
     
     -- Icon
-    local icon = Instance.new("TextLabel")
-    icon.Size = UDim2.new(0, 35, 0, 35)
-    icon.Position = UDim2.new(0, 15, 0, 12)
-    icon.BackgroundTransparency = 1
-    icon.Text = icons[type_]
-    icon.TextSize = 22
-    icon.Parent = notif
+    CreateInstance("ImageLabel", {
+        Size = UDim2.new(0, 24, 0, 24),
+        Position = UDim2.new(0, 18, 0, 15),
+        BackgroundTransparency = 1,
+        Image = GetIcon(image) or GetIcon(icons[type_]) or GetIcon("info"),
+        ImageColor3 = colors[type_] or colors.Info,
+        Parent = notif,
+    })
     
     -- Title
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -100, 0, 20)
-    titleLabel.Position = UDim2.new(0, 55, 0, 10)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = title
-    titleLabel.TextColor3 = CurrentTheme.Text
-    titleLabel.TextSize = 14
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = notif
+    CreateInstance("TextLabel", {
+        Size = UDim2.new(1, -100, 0, 20),
+        Position = UDim2.new(0, 52, 0, 12),
+        BackgroundTransparency = 1,
+        Text = title,
+        TextColor3 = WizardLib.Theme.Text,
+        TextSize = 14,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+        Parent = notif,
+    })
     
-    -- Message
-    local msgLabel = Instance.new("TextLabel")
-    msgLabel.Size = UDim2.new(1, -70, 0, 30)
-    msgLabel.Position = UDim2.new(0, 55, 0, 30)
-    msgLabel.BackgroundTransparency = 1
-    msgLabel.Text = message
-    msgLabel.TextColor3 = CurrentTheme.TextDark
-    msgLabel.TextSize = 12
-    msgLabel.Font = Enum.Font.Gotham
-    msgLabel.TextXAlignment = Enum.TextXAlignment.Left
-    msgLabel.TextWrapped = true
-    msgLabel.Parent = notif
+    -- Content
+    CreateInstance("TextLabel", {
+        Size = UDim2.new(1, -65, 0, 30),
+        Position = UDim2.new(0, 52, 0, 32),
+        BackgroundTransparency = 1,
+        Text = content,
+        TextColor3 = WizardLib.Theme.TextDark,
+        TextSize = 12,
+        Font = Enum.Font.Gotham,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+        Parent = notif,
+    })
     
     -- Close button
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 25, 0, 25)
-    closeBtn.Position = UDim2.new(1, -35, 0, 10)
-    closeBtn.BackgroundTransparency = 1
-    closeBtn.Text = "×"
-    closeBtn.TextColor3 = CurrentTheme.TextDark
-    closeBtn.TextSize = 20
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.Parent = notif
+    local closeBtn = CreateInstance("ImageButton", {
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(1, -32, 0, 12),
+        BackgroundTransparency = 1,
+        Image = GetIcon("x"),
+        ImageColor3 = WizardLib.Theme.TextDark,
+        Parent = notif,
+    })
+    
+    closeBtn.MouseEnter:Connect(function()
+        Tween(closeBtn, 0.2, {ImageColor3 = WizardLib.Theme.Error})
+    end)
+    closeBtn.MouseLeave:Connect(function()
+        Tween(closeBtn, 0.2, {ImageColor3 = WizardLib.Theme.TextDark})
+    end)
     
     -- Progress bar
-    local progressBg = Instance.new("Frame")
-    progressBg.Size = UDim2.new(1, -20, 0, 3)
-    progressBg.Position = UDim2.new(0, 10, 1, -8)
-    progressBg.BackgroundColor3 = CurrentTheme.Secondary
-    progressBg.BorderSizePixel = 0
-    progressBg.Parent = notif
-    CreateCorner(progressBg, 2)
+    local progressBg = CreateInstance("Frame", {
+        Size = UDim2.new(1, -24, 0, 3),
+        Position = UDim2.new(0, 12, 1, -10),
+        BackgroundColor3 = WizardLib.Theme.BackgroundTertiary,
+        BorderSizePixel = 0,
+        Parent = notif,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 2)})
+    })
     
-    local progressFill = Instance.new("Frame")
-    progressFill.Size = UDim2.new(1, 0, 1, 0)
-    progressFill.BackgroundColor3 = colors[type_]
-    progressFill.BorderSizePixel = 0
-    progressFill.Parent = progressBg
-    CreateCorner(progressFill, 2)
+    local progressFill = CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = colors[type_] or colors.Info,
+        BorderSizePixel = 0,
+        Parent = progressBg,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 2)})
+    })
     
-    -- Animations
-    notif.Size = UDim2.new(1, 0, 0, 0)
-    local openTween = CreateTween(notif, 0.4, {Size = UDim2.new(1, 0, 0, 75)}, Enum.EasingStyle.Back)
-    openTween:Play()
+    -- Animate in
+    Tween(notif, 0.4, {Size = UDim2.new(1, 0, 0, 75)}, Enum.EasingStyle.Back)
     
     -- Progress animation
-    CreateTween(progressFill, duration, {Size = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Linear):Play()
+    Tween(progressFill, duration, {Size = UDim2.new(0, 0, 1, 0)}, Enum.EasingStyle.Linear)
     
-    local function CloseNotif()
-        local closeTween = CreateTween(notif, 0.3, {Size = UDim2.new(1, 0, 0, 0)})
-        closeTween:Play()
-        closeTween.Completed:Connect(function()
+    local function CloseNotification()
+        Tween(notif, 0.3, {Size = UDim2.new(1, 0, 0, 0)}, Enum.EasingStyle.Quart, Enum.EasingDirection.In, function()
             notif:Destroy()
         end)
     end
     
-    closeBtn.MouseButton1Click:Connect(CloseNotif)
-    closeBtn.MouseEnter:Connect(function()
-        CreateTween(closeBtn, 0.2, {TextColor3 = colors[type_]}):Play()
-    end)
-    closeBtn.MouseLeave:Connect(function()
-        CreateTween(closeBtn, 0.2, {TextColor3 = CurrentTheme.TextDark}):Play()
-    end)
-    
-    delay(duration, CloseNotif)
+    closeBtn.MouseButton1Click:Connect(CloseNotification)
+    delay(duration, CloseNotification)
 end
 
--- ═══════════════════════════════════════════════════════════════
--- FENÊTRE PRINCIPALE
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- CREATE WINDOW
+-- ═══════════════════════════════════════════════════════════════════════════════
 
-function WizardUI:CreateWindow(options)
+function WizardLib:CreateWindow(options)
     options = options or {}
-    local title = options.Title or "Wizard UI"
-    local subtitle = options.Subtitle or ""
-    local size = options.Size or UDim2.new(0, 550, 0, 400)
-    local theme = options.Theme or "Ocean"
     
-    if Themes[theme] then
-        CurrentTheme = Themes[theme]
+    -- Apply theme
+    if options.Theme and Themes[options.Theme] then
+        WizardLib.Theme = Themes[options.Theme]
     end
     
-    local Window = {}
-    Window.Tabs = {}
-    Window.ActiveTab = nil
+    -- Key system
+    if options.KeySystem then
+        local keyValidated = false
+        CreateKeySystem(options.KeySettings or {}, function(success)
+            keyValidated = success
+        end)
+        repeat wait() until keyValidated
+    end
     
-    -- ScreenGui
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "WizardUI"
-    screenGui.ResetOnSpawn = false
-    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    screenGui.Parent = game.CoreGui
+    local Window = {
+        Tabs = {},
+        ActiveTab = nil,
+        Visible = true,
+    }
     
-    CreateNotificationSystem(screenGui)
+    -- Main GUI
+    local screenGui = CreateInstance("ScreenGui", {
+        Name = "WizardUI",
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Parent = CoreGui,
+    })
     
-    -- Main Container
-    local mainContainer = Instance.new("Frame")
-    mainContainer.Name = "MainContainer"
-    mainContainer.Size = size
-    mainContainer.Position = UDim2.new(0.5, -size.X.Offset/2, 0.5, -size.Y.Offset/2)
-    mainContainer.BackgroundColor3 = CurrentTheme.Primary
-    mainContainer.BackgroundTransparency = CurrentTheme.Glass
-    mainContainer.BorderSizePixel = 0
-    mainContainer.ClipsDescendants = true
-    mainContainer.Parent = screenGui
+    CreateNotificationHolder(screenGui)
     
-    CreateCorner(mainContainer, 12)
-    CreateStroke(mainContainer, CurrentTheme.Accent, 1, 0.7)
-    CreateShadow(mainContainer, 25, CurrentTheme.Shadow)
-    CreateGlow(mainContainer, CurrentTheme.Accent, 0.85)
+    -- Main container
+    local mainSize = options.Size or UDim2.new(0, 580, 0, 420)
     
-    -- Animation d'ouverture
-    mainContainer.Size = UDim2.new(0, 0, 0, 0)
-    mainContainer.BackgroundTransparency = 1
+    local main = CreateInstance("Frame", {
+        Name = "Main",
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = WizardLib.Theme.Background,
+        BackgroundTransparency = WizardLib.Theme.GlassTransparency,
+        BorderSizePixel = 0,
+        ClipsDescendants = true,
+        Parent = screenGui,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 12)})
+    })
     
-    local openTween = CreateTween(mainContainer, 0.6, {
-        Size = size,
-        BackgroundTransparency = CurrentTheme.Glass
-    }, Enum.EasingStyle.Back)
-    openTween:Play()
+    CreateShadow(main, 30)
+    CreateStroke(main, WizardLib.Theme.Accent, 1, 0.8)
     
-    -- ═══════════════════════════════════════════════════════════
+    -- Open animation
+    Tween(main, 0.6, {Size = mainSize}, Enum.EasingStyle.Back)
+    
+    -- ═══════════════════════════════════════════════════════════════════════
     -- HEADER
-    -- ═══════════════════════════════════════════════════════════
+    -- ═══════════════════════════════════════════════════════════════════════
     
-    local header = Instance.new("Frame")
-    header.Name = "Header"
-    header.Size = UDim2.new(1, 0, 0, 50)
-    header.BackgroundColor3 = CurrentTheme.Secondary
-    header.BackgroundTransparency = 0.5
-    header.BorderSizePixel = 0
-    header.Parent = mainContainer
+    local header = CreateInstance("Frame", {
+        Name = "Header",
+        Size = UDim2.new(1, 0, 0, 55),
+        BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+        BackgroundTransparency = 0.3,
+        BorderSizePixel = 0,
+        Parent = main,
+    })
     
-    -- Header gradient
-    CreateGradient(header, {CurrentTheme.Accent, CurrentTheme.AccentDark}, 90)
+    -- Icon
+    if options.Icon and options.Icon ~= 0 then
+        CreateInstance("ImageLabel", {
+            Size = UDim2.new(0, 28, 0, 28),
+            Position = UDim2.new(0, 15, 0.5, -14),
+            BackgroundTransparency = 1,
+            Image = GetIcon(options.Icon),
+            ImageColor3 = WizardLib.Theme.Accent,
+            Parent = header,
+        })
+    end
     
-    local headerCorner = Instance.new("Frame")
-    headerCorner.Size = UDim2.new(1, 0, 0, 12)
-    headerCorner.Position = UDim2.new(0, 0, 1, -12)
-    headerCorner.BackgroundColor3 = CurrentTheme.Secondary
-    headerCorner.BackgroundTransparency = 0.5
-    headerCorner.BorderSizePixel = 0
-    headerCorner.Parent = header
-    
-    -- Logo/Icon animé
-    local logoContainer = Instance.new("Frame")
-    logoContainer.Size = UDim2.new(0, 36, 0, 36)
-    logoContainer.Position = UDim2.new(0, 12, 0.5, -18)
-    logoContainer.BackgroundColor3 = Color3.new(1, 1, 1)
-    logoContainer.BackgroundTransparency = 0.9
-    logoContainer.Parent = header
-    CreateCorner(logoContainer, 8)
-    
-    local logo = Instance.new("TextLabel")
-    logo.Size = UDim2.new(1, 0, 1, 0)
-    logo.BackgroundTransparency = 1
-    logo.Text = "🔮"
-    logo.TextSize = 22
-    logo.Parent = logoContainer
-    
-    -- Animation rotation logo
-    spawn(function()
-        local rotation = 0
-        while logoContainer and logoContainer.Parent do
-            rotation = rotation + 1
-            logo.Rotation = math.sin(rotation * 0.05) * 10
-            RunService.RenderStepped:Wait()
-        end
-    end)
+    local titleOffset = (options.Icon and options.Icon ~= 0) and 55 or 18
     
     -- Title
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(0.5, 0, 0, 22)
-    titleLabel.Position = UDim2.new(0, 58, 0, 8)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = title
-    titleLabel.TextColor3 = CurrentTheme.Text
-    titleLabel.TextSize = 18
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = header
+    CreateInstance("TextLabel", {
+        Size = UDim2.new(0.5, 0, 0, 22),
+        Position = UDim2.new(0, titleOffset, 0, 10),
+        BackgroundTransparency = 1,
+        Text = options.Name or "Wizard UI",
+        TextColor3 = WizardLib.Theme.Text,
+        TextSize = 17,
+        Font = Enum.Font.GothamBold,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = header,
+    })
     
     -- Subtitle
-    local subtitleLabel = Instance.new("TextLabel")
-    subtitleLabel.Size = UDim2.new(0.5, 0, 0, 16)
-    subtitleLabel.Position = UDim2.new(0, 58, 0, 28)
-    subtitleLabel.BackgroundTransparency = 1
-    subtitleLabel.Text = subtitle
-    subtitleLabel.TextColor3 = CurrentTheme.TextDark
-    subtitleLabel.TextSize = 11
-    subtitleLabel.Font = Enum.Font.Gotham
-    subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    subtitleLabel.Parent = header
+    if options.LoadingSubtitle then
+        CreateInstance("TextLabel", {
+            Size = UDim2.new(0.5, 0, 0, 16),
+            Position = UDim2.new(0, titleOffset, 0, 32),
+            BackgroundTransparency = 1,
+            Text = options.LoadingSubtitle,
+            TextColor3 = WizardLib.Theme.TextDark,
+            TextSize = 11,
+            Font = Enum.Font.Gotham,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Parent = header,
+        })
+    end
     
-    -- Window Controls
-    local controls = Instance.new("Frame")
-    controls.Size = UDim2.new(0, 85, 0, 30)
-    controls.Position = UDim2.new(1, -95, 0.5, -15)
-    controls.BackgroundTransparency = 1
-    controls.Parent = header
+    -- Window controls
+    local controls = CreateInstance("Frame", {
+        Size = UDim2.new(0, 90, 0, 30),
+        Position = UDim2.new(1, -100, 0.5, -15),
+        BackgroundTransparency = 1,
+        Parent = header,
+    })
     
-    local function CreateControlButton(icon, color, posX, callback)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0, 25, 0, 25)
-        btn.Position = UDim2.new(0, posX, 0.5, -12.5)
-        btn.BackgroundColor3 = color
-        btn.BackgroundTransparency = 0.3
-        btn.Text = icon
-        btn.TextSize = 12
-        btn.TextColor3 = CurrentTheme.Text
-        btn.Font = Enum.Font.GothamBold
-        btn.Parent = controls
-        CreateCorner(btn, 6)
+    local function CreateControlBtn(icon, color, posX, callback)
+        local btn = CreateInstance("ImageButton", {
+            Size = UDim2.new(0, 26, 0, 26),
+            Position = UDim2.new(0, posX, 0.5, -13),
+            BackgroundColor3 = color,
+            BackgroundTransparency = 0.4,
+            Image = GetIcon(icon),
+            ImageColor3 = WizardLib.Theme.Text,
+            AutoButtonColor = false,
+            Parent = controls,
+        }, {
+            CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+        })
         
         btn.MouseEnter:Connect(function()
-            CreateTween(btn, 0.2, {BackgroundTransparency = 0, Size = UDim2.new(0, 28, 0, 28)}):Play()
+            Tween(btn, 0.2, {BackgroundTransparency = 0})
         end)
         btn.MouseLeave:Connect(function()
-            CreateTween(btn, 0.2, {BackgroundTransparency = 0.3, Size = UDim2.new(0, 25, 0, 25)}):Play()
+            Tween(btn, 0.2, {BackgroundTransparency = 0.4})
         end)
         btn.MouseButton1Click:Connect(callback)
         
@@ -542,41 +1110,35 @@ function WizardUI:CreateWindow(options)
     end
     
     -- Minimize
-    CreateControlButton("−", Color3.fromRGB(255, 180, 50), 0, function()
-        local targetSize = Window.Minimized and size or UDim2.new(size.X.Scale, size.X.Offset, 0, 50)
+    CreateControlBtn("minus", Color3.fromRGB(255, 180, 50), 0, function()
         Window.Minimized = not Window.Minimized
-        CreateTween(mainContainer, 0.4, {Size = targetSize}, Enum.EasingStyle.Back):Play()
+        local targetSize = Window.Minimized and UDim2.new(mainSize.X.Scale, mainSize.X.Offset, 0, 55) or mainSize
+        Tween(main, 0.4, {Size = targetSize}, Enum.EasingStyle.Back)
     end)
     
     -- Maximize
-    CreateControlButton("□", Color3.fromRGB(50, 200, 100), 30, function()
+    CreateControlBtn("maximize-2", Color3.fromRGB(80, 200, 100), 32, function()
         Window.Maximized = not Window.Maximized
-        local targetSize = Window.Maximized and UDim2.new(0.9, 0, 0.9, 0) or size
-        local targetPos = Window.Maximized and UDim2.new(0.05, 0, 0.05, 0) or UDim2.new(0.5, -size.X.Offset/2, 0.5, -size.Y.Offset/2)
-        CreateTween(mainContainer, 0.4, {Size = targetSize, Position = targetPos}, Enum.EasingStyle.Back):Play()
+        local targetSize = Window.Maximized and UDim2.new(0.92, 0, 0.92, 0) or mainSize
+        local targetPos = Window.Maximized and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, 0, 0.5, 0)
+        Tween(main, 0.4, {Size = targetSize}, Enum.EasingStyle.Back)
     end)
     
     -- Close
-    CreateControlButton("×", Color3.fromRGB(255, 80, 80), 60, function()
-        CreateTween(mainContainer, 0.4, {
-            Size = UDim2.new(0, 0, 0, 0),
-            BackgroundTransparency = 1
-        }, Enum.EasingStyle.Back, Enum.EasingDirection.In):Play()
-        delay(0.5, function()
+    CreateControlBtn("x", Color3.fromRGB(255, 90, 90), 64, function()
+        Tween(main, 0.4, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Back, Enum.EasingDirection.In, function()
             screenGui:Destroy()
         end)
     end)
     
     -- Dragging
-    local dragging = false
-    local dragStart = nil
-    local startPos = nil
+    local dragging, dragStart, startPos = false, nil, nil
     
     header.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
-            startPos = mainContainer.Position
+            startPos = main.Position
         end
     end)
     
@@ -589,248 +1151,279 @@ function WizardUI:CreateWindow(options)
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = input.Position - dragStart
-            mainContainer.Position = UDim2.new(
-                startPos.X.Scale, startPos.X.Offset + delta.X,
-                startPos.Y.Scale, startPos.Y.Offset + delta.Y
-            )
+            main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
     
-    -- ═══════════════════════════════════════════════════════════
-    -- TAB BAR (SIDEBAR)
-    -- ═══════════════════════════════════════════════════════════
+    -- ═══════════════════════════════════════════════════════════════════════
+    -- SIDEBAR
+    -- ═══════════════════════════════════════════════════════════════════════
     
-    local sidebar = Instance.new("Frame")
-    sidebar.Name = "Sidebar"
-    sidebar.Size = UDim2.new(0, 55, 1, -55)
-    sidebar.Position = UDim2.new(0, 0, 0, 50)
-    sidebar.BackgroundColor3 = CurrentTheme.Secondary
-    sidebar.BackgroundTransparency = 0.3
-    sidebar.BorderSizePixel = 0
-    sidebar.Parent = mainContainer
+    local sidebar = CreateInstance("Frame", {
+        Name = "Sidebar",
+        Size = UDim2.new(0, 58, 1, -60),
+        Position = UDim2.new(0, 0, 0, 55),
+        BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        Parent = main,
+    })
     
-    local sidebarLayout = Instance.new("UIListLayout")
-    sidebarLayout.Padding = UDim.new(0, 5)
-    sidebarLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    sidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    sidebarLayout.Parent = sidebar
-    
-    local sidebarPadding = Instance.new("UIPadding")
-    sidebarPadding.PaddingTop = UDim.new(0, 10)
-    sidebarPadding.Parent = sidebar
+    local tabContainer = CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 1, -15),
+        Position = UDim2.new(0, 0, 0, 10),
+        BackgroundTransparency = 1,
+        Parent = sidebar,
+    }, {
+        CreateInstance("UIListLayout", {
+            Padding = UDim.new(0, 6),
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            SortOrder = Enum.SortOrder.LayoutOrder,
+        })
+    })
     
     -- Tab indicator
-    local tabIndicator = Instance.new("Frame")
-    tabIndicator.Name = "Indicator"
-    tabIndicator.Size = UDim2.new(0, 3, 0, 35)
-    tabIndicator.Position = UDim2.new(0, 0, 0, 10)
-    tabIndicator.BackgroundColor3 = CurrentTheme.Accent
-    tabIndicator.BorderSizePixel = 0
-    tabIndicator.Parent = sidebar
-    CreateCorner(tabIndicator, 2)
+    local tabIndicator = CreateInstance("Frame", {
+        Name = "Indicator",
+        Size = UDim2.new(0, 3, 0, 38),
+        Position = UDim2.new(0, 0, 0, 10),
+        BackgroundColor3 = WizardLib.Theme.Accent,
+        BorderSizePixel = 0,
+        Parent = sidebar,
+    }, {
+        CreateInstance("UICorner", {CornerRadius = UDim.new(0, 2)})
+    })
     
-    -- ═══════════════════════════════════════════════════════════
+    -- ═══════════════════════════════════════════════════════════════════════
     -- CONTENT AREA
-    -- ═══════════════════════════════════════════════════════════
+    -- ═══════════════════════════════════════════════════════════════════════
     
-    local contentArea = Instance.new("Frame")
-    contentArea.Name = "ContentArea"
-    contentArea.Size = UDim2.new(1, -60, 1, -55)
-    contentArea.Position = UDim2.new(0, 58, 0, 52)
-    contentArea.BackgroundTransparency = 1
-    contentArea.ClipsDescendants = true
-    contentArea.Parent = mainContainer
+    local contentArea = CreateInstance("Frame", {
+        Name = "Content",
+        Size = UDim2.new(1, -65, 1, -60),
+        Position = UDim2.new(0, 62, 0, 58),
+        BackgroundTransparency = 1,
+        ClipsDescendants = true,
+        Parent = main,
+    })
     
-    -- ═══════════════════════════════════════════════════════════
+    -- ═══════════════════════════════════════════════════════════════════════
     -- CREATE TAB FUNCTION
-    -- ═══════════════════════════════════════════════════════════
+    -- ═══════════════════════════════════════════════════════════════════════
     
-    function Window:CreateTab(options)
-        options = options or {}
-        local name = options.Name or "Tab"
-        local icon = options.Icon or "📁"
+    function Window:CreateTab(name, icon)
+        local Tab = {
+            Name = name,
+            Elements = {},
+        }
         
-        local Tab = {}
-        Tab.Elements = {}
-        
-        -- Tab Button
-        local tabBtn = Instance.new("TextButton")
-        tabBtn.Name = name
-        tabBtn.Size = UDim2.new(0, 45, 0, 45)
-        tabBtn.BackgroundColor3 = CurrentTheme.Primary
-        tabBtn.BackgroundTransparency = 0.5
-        tabBtn.Text = ""
-        tabBtn.Parent = sidebar
-        CreateCorner(tabBtn, 10)
-        
-        local tabIcon = Instance.new("TextLabel")
-        tabIcon.Size = UDim2.new(1, 0, 1, 0)
-        tabIcon.BackgroundTransparency = 1
-        tabIcon.Text = icon
-        tabIcon.TextSize = 20
-        tabIcon.Parent = tabBtn
+        -- Tab button
+        local tabBtn = CreateInstance("ImageButton", {
+            Name = name,
+            Size = UDim2.new(0, 44, 0, 44),
+            BackgroundColor3 = WizardLib.Theme.Background,
+            BackgroundTransparency = 0.6,
+            Image = GetIcon(icon) or GetIcon("folder"),
+            ImageColor3 = WizardLib.Theme.TextDark,
+            AutoButtonColor = false,
+            Parent = tabContainer,
+        }, {
+            CreateInstance("UICorner", {CornerRadius = UDim.new(0, 10)})
+        })
         
         -- Tooltip
-        local tooltip = Instance.new("Frame")
-        tooltip.Size = UDim2.new(0, 0, 0, 30)
-        tooltip.Position = UDim2.new(1, 10, 0.5, -15)
-        tooltip.BackgroundColor3 = CurrentTheme.Secondary
-        tooltip.BackgroundTransparency = 0.1
-        tooltip.BorderSizePixel = 0
-        tooltip.ClipsDescendants = true
-        tooltip.Visible = false
-        tooltip.Parent = tabBtn
-        CreateCorner(tooltip, 6)
+        local tooltip = CreateInstance("Frame", {
+            Size = UDim2.new(0, 0, 0, 32),
+            Position = UDim2.new(1, 12, 0.5, -16),
+            BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+            BorderSizePixel = 0,
+            ClipsDescendants = true,
+            ZIndex = 100,
+            Parent = tabBtn,
+        }, {
+            CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+        })
         
-        local tooltipText = Instance.new("TextLabel")
-        tooltipText.Size = UDim2.new(1, -10, 1, 0)
-        tooltipText.Position = UDim2.new(0, 5, 0, 0)
-        tooltipText.BackgroundTransparency = 1
-        tooltipText.Text = name
-        tooltipText.TextColor3 = CurrentTheme.Text
-        tooltipText.TextSize = 12
-        tooltipText.Font = Enum.Font.GothamBold
-        tooltipText.TextXAlignment = Enum.TextXAlignment.Left
-        tooltipText.Parent = tooltip
+        local tooltipLabel = CreateInstance("TextLabel", {
+            Size = UDim2.new(1, -16, 1, 0),
+            Position = UDim2.new(0, 8, 0, 0),
+            BackgroundTransparency = 1,
+            Text = name,
+            TextColor3 = WizardLib.Theme.Text,
+            TextSize = 12,
+            Font = Enum.Font.GothamBold,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 101,
+            Parent = tooltip,
+        })
         
         tabBtn.MouseEnter:Connect(function()
-            tooltip.Visible = true
-            CreateTween(tooltip, 0.3, {Size = UDim2.new(0, #name * 8 + 20, 0, 30)}, Enum.EasingStyle.Back):Play()
-            CreateTween(tabBtn, 0.2, {BackgroundTransparency = 0.2}):Play()
+            Tween(tooltip, 0.25, {Size = UDim2.new(0, #name * 8 + 20, 0, 32)}, Enum.EasingStyle.Back)
+            Tween(tabBtn, 0.2, {BackgroundTransparency = 0.3})
         end)
         
         tabBtn.MouseLeave:Connect(function()
-            CreateTween(tooltip, 0.2, {Size = UDim2.new(0, 0, 0, 30)}):Play()
-            delay(0.2, function() tooltip.Visible = false end)
+            Tween(tooltip, 0.2, {Size = UDim2.new(0, 0, 0, 32)})
             if Window.ActiveTab ~= Tab then
-                CreateTween(tabBtn, 0.2, {BackgroundTransparency = 0.5}):Play()
+                Tween(tabBtn, 0.2, {BackgroundTransparency = 0.6})
             end
         end)
         
-        -- Tab Content
-        local tabContent = Instance.new("ScrollingFrame")
-        tabContent.Name = name .. "Content"
-        tabContent.Size = UDim2.new(1, -10, 1, -10)
-        tabContent.Position = UDim2.new(0, 5, 0, 5)
-        tabContent.BackgroundTransparency = 1
-        tabContent.BorderSizePixel = 0
-        tabContent.ScrollBarThickness = 3
-        tabContent.ScrollBarImageColor3 = CurrentTheme.Accent
-        tabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
-        tabContent.Visible = false
-        tabContent.Parent = contentArea
+        -- Tab content
+        local tabContent = CreateInstance("ScrollingFrame", {
+            Name = name,
+            Size = UDim2.new(1, -10, 1, -10),
+            Position = UDim2.new(0, 5, 0, 5),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            ScrollBarThickness = 3,
+            ScrollBarImageColor3 = WizardLib.Theme.Accent,
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+            Visible = false,
+            Parent = contentArea,
+        }, {
+            CreateInstance("UIListLayout", {
+                Padding = UDim.new(0, 8),
+                HorizontalAlignment = Enum.HorizontalAlignment.Center,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+            }),
+            CreateInstance("UIPadding", {
+                PaddingTop = UDim.new(0, 5),
+                PaddingBottom = UDim.new(0, 10),
+            })
+        })
         
-        local contentLayout = Instance.new("UIListLayout")
-        contentLayout.Padding = UDim.new(0, 8)
-        contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-        contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        contentLayout.Parent = tabContent
-        
-        contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            tabContent.CanvasSize = UDim2.new(0, 0, 0, contentLayout.AbsoluteContentSize.Y + 20)
+        tabContent:FindFirstChildOfClass("UIListLayout"):GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            tabContent.CanvasSize = UDim2.new(0, 0, 0, tabContent:FindFirstChildOfClass("UIListLayout").AbsoluteContentSize.Y + 20)
         end)
         
-        -- Tab Selection
+        -- Tab selection
         tabBtn.MouseButton1Click:Connect(function()
             if Window.ActiveTab then
                 Window.ActiveTab.Content.Visible = false
-                CreateTween(Window.ActiveTab.Button, 0.2, {BackgroundTransparency = 0.5}):Play()
+                Tween(Window.ActiveTab.Button, 0.2, {BackgroundTransparency = 0.6, ImageColor3 = WizardLib.Theme.TextDark})
             end
             
             Window.ActiveTab = Tab
             tabContent.Visible = true
-            CreateTween(tabBtn, 0.2, {BackgroundTransparency = 0.1}):Play()
             
-            -- Animate indicator
+            Tween(tabBtn, 0.2, {BackgroundTransparency = 0.2, ImageColor3 = WizardLib.Theme.Accent})
+            
             local btnPos = tabBtn.AbsolutePosition.Y - sidebar.AbsolutePosition.Y
-            CreateTween(tabIndicator, 0.3, {Position = UDim2.new(0, 0, 0, btnPos + 5)}, Enum.EasingStyle.Back):Play()
+            Tween(tabIndicator, 0.3, {Position = UDim2.new(0, 0, 0, btnPos + 3)}, Enum.EasingStyle.Back)
             
-            Ripple(tabBtn, tabBtn.AbsolutePosition.X + 22, tabBtn.AbsolutePosition.Y + 22)
+            Ripple(tabBtn, tabBtn.AbsolutePosition.X + 22, tabBtn.AbsolutePosition.Y + 22, WizardLib.Theme.Accent)
         end)
         
         Tab.Button = tabBtn
         Tab.Content = tabContent
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- SECTION
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateSection(name)
-            local section = Instance.new("Frame")
-            section.Size = UDim2.new(1, -10, 0, 30)
-            section.BackgroundColor3 = CurrentTheme.Accent
-            section.BackgroundTransparency = 0.7
-            section.BorderSizePixel = 0
-            section.Parent = tabContent
-            CreateCorner(section, 6)
+            local section = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 28),
+                BackgroundColor3 = WizardLib.Theme.Accent,
+                BackgroundTransparency = 0.8,
+                BorderSizePixel = 0,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+            })
             
-            local sectionLabel = Instance.new("TextLabel")
-            sectionLabel.Size = UDim2.new(1, 0, 1, 0)
-            sectionLabel.BackgroundTransparency = 1
-            sectionLabel.Text = "  " .. name
-            sectionLabel.TextColor3 = CurrentTheme.Text
-            sectionLabel.TextSize = 13
-            sectionLabel.Font = Enum.Font.GothamBold
-            sectionLabel.TextXAlignment = Enum.TextXAlignment.Left
-            sectionLabel.Parent = section
+            CreateInstance("ImageLabel", {
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new(0, 10, 0.5, -8),
+                BackgroundTransparency = 1,
+                Image = GetIcon("layers"),
+                ImageColor3 = WizardLib.Theme.Accent,
+                Parent = section,
+            })
             
-            return section
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(1, -40, 1, 0),
+                Position = UDim2.new(0, 32, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.GothamBold,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = section,
+            })
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- TOGGLE
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateToggle(options)
             options = options or {}
             local name = options.Name or "Toggle"
             local default = options.Default or false
+            local flag = options.Flag
             local callback = options.Callback or function() end
             
-            local toggle = Instance.new("Frame")
-            toggle.Size = UDim2.new(1, -10, 0, 45)
-            toggle.BackgroundColor3 = CurrentTheme.Secondary
-            toggle.BackgroundTransparency = 0.5
-            toggle.BorderSizePixel = 0
-            toggle.Parent = tabContent
-            CreateCorner(toggle, 8)
+            local toggle = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 42),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
             
-            local toggleLabel = Instance.new("TextLabel")
-            toggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
-            toggleLabel.Position = UDim2.new(0, 15, 0, 0)
-            toggleLabel.BackgroundTransparency = 1
-            toggleLabel.Text = name
-            toggleLabel.TextColor3 = CurrentTheme.Text
-            toggleLabel.TextSize = 13
-            toggleLabel.Font = Enum.Font.Gotham
-            toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-            toggleLabel.Parent = toggle
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(0.7, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = toggle,
+            })
             
-            -- Toggle Switch
-            local switchBg = Instance.new("Frame")
-            switchBg.Size = UDim2.new(0, 50, 0, 26)
-            switchBg.Position = UDim2.new(1, -65, 0.5, -13)
-            switchBg.BackgroundColor3 = default and CurrentTheme.Accent or CurrentTheme.Primary
-            switchBg.BorderSizePixel = 0
-            switchBg.Parent = toggle
-            CreateCorner(switchBg, 13)
+            local switchBg = CreateInstance("Frame", {
+                Size = UDim2.new(0, 48, 0, 24),
+                Position = UDim2.new(1, -62, 0.5, -12),
+                BackgroundColor3 = default and WizardLib.Theme.Accent or WizardLib.Theme.Background,
+                BorderSizePixel = 0,
+                Parent = toggle,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(1, 0)})
+            })
             
-            local switchKnob = Instance.new("Frame")
-            switchKnob.Size = UDim2.new(0, 20, 0, 20)
-            switchKnob.Position = default and UDim2.new(1, -23, 0.5, -10) or UDim2.new(0, 3, 0.5, -10)
-            switchKnob.BackgroundColor3 = Color3.new(1, 1, 1)
-            switchKnob.BorderSizePixel = 0
-            switchKnob.Parent = switchBg
-            CreateCorner(switchKnob, 10)
+            local switchKnob = CreateInstance("Frame", {
+                Size = UDim2.new(0, 18, 0, 18),
+                Position = default and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9),
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                Parent = switchBg,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(1, 0)})
+            })
             
             local enabled = default
             
+            if flag then
+                WizardLib.Flags[flag] = enabled
+            end
+            
             local function UpdateToggle()
-                local knobPos = enabled and UDim2.new(1, -23, 0.5, -10) or UDim2.new(0, 3, 0.5, -10)
-                local bgColor = enabled and CurrentTheme.Accent or CurrentTheme.Primary
+                local knobPos = enabled and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9)
+                local bgColor = enabled and WizardLib.Theme.Accent or WizardLib.Theme.Background
                 
-                CreateTween(switchKnob, 0.3, {Position = knobPos}, Enum.EasingStyle.Back):Play()
-                CreateTween(switchBg, 0.3, {BackgroundColor3 = bgColor}):Play()
+                Tween(switchKnob, 0.25, {Position = knobPos}, Enum.EasingStyle.Back)
+                Tween(switchBg, 0.25, {BackgroundColor3 = bgColor})
+                
+                if flag then
+                    WizardLib.Flags[flag] = enabled
+                end
                 
                 callback(enabled)
             end
@@ -839,28 +1432,31 @@ function WizardUI:CreateWindow(options)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     enabled = not enabled
                     UpdateToggle()
-                    Ripple(toggle, input.Position.X, input.Position.Y)
+                    Ripple(toggle, input.Position.X, input.Position.Y, WizardLib.Theme.Accent)
                 end
             end)
             
             toggle.MouseEnter:Connect(function()
-                CreateTween(toggle, 0.2, {BackgroundTransparency = 0.3}):Play()
+                Tween(toggle, 0.2, {BackgroundTransparency = 0.3})
             end)
             toggle.MouseLeave:Connect(function()
-                CreateTween(toggle, 0.2, {BackgroundTransparency = 0.5}):Play()
+                Tween(toggle, 0.2, {BackgroundTransparency = 0.5})
             end)
             
             return {
                 Set = function(_, value)
                     enabled = value
                     UpdateToggle()
+                end,
+                Get = function()
+                    return enabled
                 end
             }
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- SLIDER
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateSlider(options)
             options = options or {}
@@ -868,73 +1464,101 @@ function WizardUI:CreateWindow(options)
             local min = options.Min or 0
             local max = options.Max or 100
             local default = options.Default or min
+            local increment = options.Increment or 1
+            local flag = options.Flag
             local callback = options.Callback or function() end
             
-            local slider = Instance.new("Frame")
-            slider.Size = UDim2.new(1, -10, 0, 55)
-            slider.BackgroundColor3 = CurrentTheme.Secondary
-            slider.BackgroundTransparency = 0.5
-            slider.BorderSizePixel = 0
-            slider.Parent = tabContent
-            CreateCorner(slider, 8)
+            local slider = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 55),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
             
-            local sliderLabel = Instance.new("TextLabel")
-            sliderLabel.Size = UDim2.new(0.6, 0, 0, 25)
-            sliderLabel.Position = UDim2.new(0, 15, 0, 5)
-            sliderLabel.BackgroundTransparency = 1
-            sliderLabel.Text = name
-            sliderLabel.TextColor3 = CurrentTheme.Text
-            sliderLabel.TextSize = 13
-            sliderLabel.Font = Enum.Font.Gotham
-            sliderLabel.TextXAlignment = Enum.TextXAlignment.Left
-            sliderLabel.Parent = slider
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(0.6, 0, 0, 22),
+                Position = UDim2.new(0, 15, 0, 8),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = slider,
+            })
             
-            local valueLabel = Instance.new("TextLabel")
-            valueLabel.Size = UDim2.new(0.3, 0, 0, 25)
-            valueLabel.Position = UDim2.new(0.7, -15, 0, 5)
-            valueLabel.BackgroundTransparency = 1
-            valueLabel.Text = tostring(default)
-            valueLabel.TextColor3 = CurrentTheme.Accent
-            valueLabel.TextSize = 13
-            valueLabel.Font = Enum.Font.GothamBold
-            valueLabel.TextXAlignment = Enum.TextXAlignment.Right
-            valueLabel.Parent = slider
+            local valueLabel = CreateInstance("TextLabel", {
+                Size = UDim2.new(0.35, 0, 0, 22),
+                Position = UDim2.new(0.65, -15, 0, 8),
+                BackgroundTransparency = 1,
+                Text = tostring(default),
+                TextColor3 = WizardLib.Theme.Accent,
+                TextSize = 13,
+                Font = Enum.Font.GothamBold,
+                TextXAlignment = Enum.TextXAlignment.Right,
+                Parent = slider,
+            })
             
-            local sliderBg = Instance.new("Frame")
-            sliderBg.Size = UDim2.new(1, -30, 0, 8)
-            sliderBg.Position = UDim2.new(0, 15, 0, 35)
-            sliderBg.BackgroundColor3 = CurrentTheme.Primary
-            sliderBg.BorderSizePixel = 0
-            sliderBg.Parent = slider
-            CreateCorner(sliderBg, 4)
+            local sliderBg = CreateInstance("Frame", {
+                Size = UDim2.new(1, -30, 0, 6),
+                Position = UDim2.new(0, 15, 0, 38),
+                BackgroundColor3 = WizardLib.Theme.Background,
+                BorderSizePixel = 0,
+                Parent = slider,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(1, 0)})
+            })
             
-            local sliderFill = Instance.new("Frame")
-            sliderFill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-            sliderFill.BackgroundColor3 = CurrentTheme.Accent
-            sliderFill.BorderSizePixel = 0
-            sliderFill.Parent = sliderBg
-            CreateCorner(sliderFill, 4)
-            CreateGradient(sliderFill, {CurrentTheme.Accent, CurrentTheme.AccentDark}, 0)
+            local sliderFill = CreateInstance("Frame", {
+                Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
+                BackgroundColor3 = WizardLib.Theme.Accent,
+                BorderSizePixel = 0,
+                Parent = sliderBg,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(1, 0)})
+            })
             
-            local sliderKnob = Instance.new("Frame")
-            sliderKnob.Size = UDim2.new(0, 18, 0, 18)
-            sliderKnob.Position = UDim2.new((default - min) / (max - min), -9, 0.5, -9)
-            sliderKnob.BackgroundColor3 = Color3.new(1, 1, 1)
-            sliderKnob.BorderSizePixel = 0
-            sliderKnob.ZIndex = 2
-            sliderKnob.Parent = sliderBg
-            CreateCorner(sliderKnob, 9)
+            local sliderKnob = CreateInstance("Frame", {
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new((default - min) / (max - min), -8, 0.5, -8),
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                ZIndex = 5,
+                Parent = sliderBg,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(1, 0)})
+            })
+            
             CreateShadow(sliderKnob, 5)
             
             local dragging = false
+            local currentValue = default
+            
+            if flag then
+                WizardLib.Flags[flag] = currentValue
+            end
             
             local function UpdateSlider(inputX)
                 local rel = math.clamp((inputX - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
-                local value = math.floor(min + (max - min) * rel)
+                local rawValue = min + (max - min) * rel
+                local value = math.floor(rawValue / increment + 0.5) * increment
+                value = math.clamp(value, min, max)
                 
-                CreateTween(sliderFill, 0.1, {Size = UDim2.new(rel, 0, 1, 0)}):Play()
-                CreateTween(sliderKnob, 0.1, {Position = UDim2.new(rel, -9, 0.5, -9)}):Play()
+                local displayRel = (value - min) / (max - min)
+                
+                Tween(sliderFill, 0.1, {Size = UDim2.new(displayRel, 0, 1, 0)})
+                Tween(sliderKnob, 0.1, {Position = UDim2.new(displayRel, -8, 0.5, -8)})
+                
                 valueLabel.Text = tostring(value)
+                currentValue = value
+                
+                if flag then
+                    WizardLib.Flags[flag] = value
+                end
+                
                 callback(value)
             end
             
@@ -958,146 +1582,226 @@ function WizardUI:CreateWindow(options)
             end)
             
             slider.MouseEnter:Connect(function()
-                CreateTween(slider, 0.2, {BackgroundTransparency = 0.3}):Play()
-                CreateTween(sliderKnob, 0.2, {Size = UDim2.new(0, 22, 0, 22), Position = sliderKnob.Position - UDim2.new(0, 2, 0, 2)}):Play()
+                Tween(slider, 0.2, {BackgroundTransparency = 0.3})
+                Tween(sliderKnob, 0.2, {Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(sliderKnob.Position.X.Scale, -10, 0.5, -10)})
             end)
             slider.MouseLeave:Connect(function()
-                CreateTween(slider, 0.2, {BackgroundTransparency = 0.5}):Play()
-                CreateTween(sliderKnob, 0.2, {Size = UDim2.new(0, 18, 0, 18)}):Play()
+                Tween(slider, 0.2, {BackgroundTransparency = 0.5})
+                Tween(sliderKnob, 0.2, {Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(sliderKnob.Position.X.Scale, -8, 0.5, -8)})
             end)
+            
+            return {
+                Set = function(_, value)
+                    local rel = (value - min) / (max - min)
+                    Tween(sliderFill, 0.2, {Size = UDim2.new(rel, 0, 1, 0)})
+                    Tween(sliderKnob, 0.2, {Position = UDim2.new(rel, -8, 0.5, -8)})
+                    valueLabel.Text = tostring(value)
+                    currentValue = value
+                    if flag then WizardLib.Flags[flag] = value end
+                    callback(value)
+                end,
+                Get = function()
+                    return currentValue
+                end
+            }
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- BUTTON
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateButton(options)
             options = options or {}
             local name = options.Name or "Button"
             local callback = options.Callback or function() end
             
-            local button = Instance.new("TextButton")
-            button.Size = UDim2.new(1, -10, 0, 40)
-            button.BackgroundColor3 = CurrentTheme.Accent
-            button.BackgroundTransparency = 0.3
-            button.BorderSizePixel = 0
-            button.Text = name
-            button.TextColor3 = CurrentTheme.Text
-            button.TextSize = 14
-            button.Font = Enum.Font.GothamBold
-            button.Parent = tabContent
-            CreateCorner(button, 8)
-            CreateGradient(button, {CurrentTheme.Accent, CurrentTheme.AccentDark}, 90)
+            local button = CreateInstance("TextButton", {
+                Size = UDim2.new(1, -10, 0, 38),
+                BackgroundColor3 = WizardLib.Theme.Accent,
+                BackgroundTransparency = 0.2,
+                BorderSizePixel = 0,
+                Text = "",
+                AutoButtonColor = false,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
+            
+            CreateInstance("ImageLabel", {
+                Size = UDim2.new(0, 18, 0, 18),
+                Position = UDim2.new(0.5, -45, 0.5, -9),
+                BackgroundTransparency = 1,
+                Image = GetIcon("play"),
+                ImageColor3 = WizardLib.Theme.Text,
+                Parent = button,
+            })
+            
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(1, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 14,
+                Font = Enum.Font.GothamBold,
+                Parent = button,
+            })
             
             button.MouseEnter:Connect(function()
-                CreateTween(button, 0.2, {BackgroundTransparency = 0.1}):Play()
+                Tween(button, 0.2, {BackgroundTransparency = 0})
             end)
             button.MouseLeave:Connect(function()
-                CreateTween(button, 0.2, {BackgroundTransparency = 0.3}):Play()
+                Tween(button, 0.2, {BackgroundTransparency = 0.2})
             end)
             button.MouseButton1Click:Connect(function()
                 Ripple(button, Mouse.X, Mouse.Y)
-                
-                -- Click animation
-                CreateTween(button, 0.1, {Size = UDim2.new(1, -15, 0, 38)}):Play()
-                delay(0.1, function()
-                    CreateTween(button, 0.2, {Size = UDim2.new(1, -10, 0, 40)}, Enum.EasingStyle.Back):Play()
-                end)
-                
+                Tween(button, 0.1, {Size = UDim2.new(1, -15, 0, 36)})
+                wait(0.1)
+                Tween(button, 0.15, {Size = UDim2.new(1, -10, 0, 38)}, Enum.EasingStyle.Back)
                 callback()
             end)
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- DROPDOWN
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateDropdown(options)
             options = options or {}
             local name = options.Name or "Dropdown"
             local items = options.Items or {}
             local default = options.Default or items[1] or ""
+            local flag = options.Flag
             local callback = options.Callback or function() end
             
-            local dropdown = Instance.new("Frame")
-            dropdown.Size = UDim2.new(1, -10, 0, 45)
-            dropdown.BackgroundColor3 = CurrentTheme.Secondary
-            dropdown.BackgroundTransparency = 0.5
-            dropdown.BorderSizePixel = 0
-            dropdown.ClipsDescendants = false
-            dropdown.Parent = tabContent
-            CreateCorner(dropdown, 8)
+            local dropdown = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 42),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                ClipsDescendants = false,
+                ZIndex = 10,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
             
-            local dropLabel = Instance.new("TextLabel")
-            dropLabel.Size = UDim2.new(0.5, 0, 1, 0)
-            dropLabel.Position = UDim2.new(0, 15, 0, 0)
-            dropLabel.BackgroundTransparency = 1
-            dropLabel.Text = name
-            dropLabel.TextColor3 = CurrentTheme.Text
-            dropLabel.TextSize = 13
-            dropLabel.Font = Enum.Font.Gotham
-            dropLabel.TextXAlignment = Enum.TextXAlignment.Left
-            dropLabel.Parent = dropdown
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(0.5, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 11,
+                Parent = dropdown,
+            })
             
-            local selectBtn = Instance.new("TextButton")
-            selectBtn.Size = UDim2.new(0.45, 0, 0, 30)
-            selectBtn.Position = UDim2.new(0.52, 0, 0.5, -15)
-            selectBtn.BackgroundColor3 = CurrentTheme.Primary
-            selectBtn.BackgroundTransparency = 0.3
-            selectBtn.Text = default .. " ▼"
-            selectBtn.TextColor3 = CurrentTheme.Text
-            selectBtn.TextSize = 12
-            selectBtn.Font = Enum.Font.Gotham
-            selectBtn.Parent = dropdown
-            CreateCorner(selectBtn, 6)
+            local selectBtn = CreateInstance("TextButton", {
+                Size = UDim2.new(0.45, 0, 0, 30),
+                Position = UDim2.new(0.52, 0, 0.5, -15),
+                BackgroundColor3 = WizardLib.Theme.Background,
+                BackgroundTransparency = 0.3,
+                BorderSizePixel = 0,
+                Text = "",
+                AutoButtonColor = false,
+                ZIndex = 11,
+                Parent = dropdown,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+            })
             
-            local itemsContainer = Instance.new("Frame")
-            itemsContainer.Size = UDim2.new(0.45, 0, 0, 0)
-            itemsContainer.Position = UDim2.new(0.52, 0, 1, 5)
-            itemsContainer.BackgroundColor3 = CurrentTheme.Primary
-            itemsContainer.BackgroundTransparency = 0.1
-            itemsContainer.BorderSizePixel = 0
-            itemsContainer.ClipsDescendants = true
-            itemsContainer.ZIndex = 10
-            itemsContainer.Visible = false
-            itemsContainer.Parent = dropdown
-            CreateCorner(itemsContainer, 6)
-            CreateShadow(itemsContainer, 10)
+            local selectLabel = CreateInstance("TextLabel", {
+                Size = UDim2.new(1, -30, 1, 0),
+                Position = UDim2.new(0, 10, 0, 0),
+                BackgroundTransparency = 1,
+                Text = default,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 12,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextTruncate = Enum.TextTruncate.AtEnd,
+                ZIndex = 12,
+                Parent = selectBtn,
+            })
             
-            local itemsLayout = Instance.new("UIListLayout")
-            itemsLayout.Padding = UDim.new(0, 2)
-            itemsLayout.Parent = itemsContainer
+            local chevron = CreateInstance("ImageLabel", {
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new(1, -22, 0.5, -8),
+                BackgroundTransparency = 1,
+                Image = GetIcon("chevron-down"),
+                ImageColor3 = WizardLib.Theme.TextDark,
+                ZIndex = 12,
+                Parent = selectBtn,
+            })
+            
+            local itemsContainer = CreateInstance("Frame", {
+                Size = UDim2.new(0.45, 0, 0, 0),
+                Position = UDim2.new(0.52, 0, 1, 5),
+                BackgroundColor3 = WizardLib.Theme.Background,
+                BorderSizePixel = 0,
+                ClipsDescendants = true,
+                ZIndex = 50,
+                Visible = false,
+                Parent = dropdown,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)}),
+                CreateInstance("UIListLayout", {
+                    Padding = UDim.new(0, 2),
+                    SortOrder = Enum.SortOrder.LayoutOrder,
+                }),
+                CreateInstance("UIPadding", {
+                    PaddingTop = UDim.new(0, 4),
+                    PaddingBottom = UDim.new(0, 4),
+                })
+            })
+            
+            CreateShadow(itemsContainer, 12)
+            CreateStroke(itemsContainer, WizardLib.Theme.Divider, 1, 0.5)
             
             local opened = false
             local selected = default
             
+            if flag then
+                WizardLib.Flags[flag] = selected
+            end
+            
             for _, item in ipairs(items) do
-                local itemBtn = Instance.new("TextButton")
-                itemBtn.Size = UDim2.new(1, 0, 0, 30)
-                itemBtn.BackgroundColor3 = CurrentTheme.Secondary
-                itemBtn.BackgroundTransparency = 0.5
-                itemBtn.Text = item
-                itemBtn.TextColor3 = CurrentTheme.Text
-                itemBtn.TextSize = 12
-                itemBtn.Font = Enum.Font.Gotham
-                itemBtn.ZIndex = 11
-                itemBtn.Parent = itemsContainer
+                local itemBtn = CreateInstance("TextButton", {
+                    Size = UDim2.new(1, -8, 0, 28),
+                    BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                    BackgroundTransparency = 0.7,
+                    BorderSizePixel = 0,
+                    Text = item,
+                    TextColor3 = WizardLib.Theme.Text,
+                    TextSize = 12,
+                    Font = Enum.Font.Gotham,
+                    AutoButtonColor = false,
+                    ZIndex = 51,
+                    Parent = itemsContainer,
+                }, {
+                    CreateInstance("UICorner", {CornerRadius = UDim.new(0, 4)})
+                })
                 
                 itemBtn.MouseEnter:Connect(function()
-                    CreateTween(itemBtn, 0.15, {BackgroundTransparency = 0.2}):Play()
+                    Tween(itemBtn, 0.15, {BackgroundTransparency = 0.3})
                 end)
                 itemBtn.MouseLeave:Connect(function()
-                    CreateTween(itemBtn, 0.15, {BackgroundTransparency = 0.5}):Play()
+                    Tween(itemBtn, 0.15, {BackgroundTransparency = 0.7})
                 end)
                 itemBtn.MouseButton1Click:Connect(function()
                     selected = item
-                    selectBtn.Text = item .. " ▼"
+                    selectLabel.Text = item
+                    if flag then WizardLib.Flags[flag] = item end
                     callback(item)
                     
-                    -- Close dropdown
                     opened = false
-                    CreateTween(itemsContainer, 0.3, {Size = UDim2.new(0.45, 0, 0, 0)}):Play()
-                    delay(0.3, function() itemsContainer.Visible = false end)
+                    Tween(chevron, 0.2, {Rotation = 0})
+                    Tween(itemsContainer, 0.25, {Size = UDim2.new(0.45, 0, 0, 0)}, nil, nil, function()
+                        itemsContainer.Visible = false
+                    end)
                 end)
             end
             
@@ -1106,122 +1810,174 @@ function WizardUI:CreateWindow(options)
                 
                 if opened then
                     itemsContainer.Visible = true
-                    CreateTween(itemsContainer, 0.3, {Size = UDim2.new(0.45, 0, 0, #items * 32)}, Enum.EasingStyle.Back):Play()
-                    selectBtn.Text = selected .. " ▲"
+                    Tween(chevron, 0.2, {Rotation = 180})
+                    Tween(itemsContainer, 0.3, {Size = UDim2.new(0.45, 0, 0, #items * 30 + 8)}, Enum.EasingStyle.Back)
                 else
-                    CreateTween(itemsContainer, 0.2, {Size = UDim2.new(0.45, 0, 0, 0)}):Play()
-                    delay(0.2, function() itemsContainer.Visible = false end)
-                    selectBtn.Text = selected .. " ▼"
+                    Tween(chevron, 0.2, {Rotation = 0})
+                    Tween(itemsContainer, 0.2, {Size = UDim2.new(0.45, 0, 0, 0)}, nil, nil, function()
+                        itemsContainer.Visible = false
+                    end)
                 end
             end)
+            
+            return {
+                Set = function(_, value)
+                    selected = value
+                    selectLabel.Text = value
+                    if flag then WizardLib.Flags[flag] = value end
+                    callback(value)
+                end,
+                Get = function()
+                    return selected
+                end,
+                Refresh = function(_, newItems)
+                    -- Clear and rebuild items
+                end
+            }
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- INPUT
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateInput(options)
             options = options or {}
             local name = options.Name or "Input"
             local placeholder = options.Placeholder or "Enter text..."
+            local flag = options.Flag
             local callback = options.Callback or function() end
             
-            local input = Instance.new("Frame")
-            input.Size = UDim2.new(1, -10, 0, 45)
-            input.BackgroundColor3 = CurrentTheme.Secondary
-            input.BackgroundTransparency = 0.5
-            input.BorderSizePixel = 0
-            input.Parent = tabContent
-            CreateCorner(input, 8)
+            local input = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 42),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
             
-            local inputLabel = Instance.new("TextLabel")
-            inputLabel.Size = UDim2.new(0.4, 0, 1, 0)
-            inputLabel.Position = UDim2.new(0, 15, 0, 0)
-            inputLabel.BackgroundTransparency = 1
-            inputLabel.Text = name
-            inputLabel.TextColor3 = CurrentTheme.Text
-            inputLabel.TextSize = 13
-            inputLabel.Font = Enum.Font.Gotham
-            inputLabel.TextXAlignment = Enum.TextXAlignment.Left
-            inputLabel.Parent = input
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(0.4, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = input,
+            })
             
-            local textBox = Instance.new("TextBox")
-            textBox.Size = UDim2.new(0.55, 0, 0, 30)
-            textBox.Position = UDim2.new(0.42, 0, 0.5, -15)
-            textBox.BackgroundColor3 = CurrentTheme.Primary
-            textBox.BackgroundTransparency = 0.3
-            textBox.Text = ""
-            textBox.PlaceholderText = placeholder
-            textBox.PlaceholderColor3 = CurrentTheme.TextDark
-            textBox.TextColor3 = CurrentTheme.Text
-            textBox.TextSize = 12
-            textBox.Font = Enum.Font.Gotham
-            textBox.ClearTextOnFocus = false
-            textBox.Parent = input
-            CreateCorner(textBox, 6)
+            local textBox = CreateInstance("TextBox", {
+                Size = UDim2.new(0.55, 0, 0, 30),
+                Position = UDim2.new(0.42, 0, 0.5, -15),
+                BackgroundColor3 = WizardLib.Theme.Background,
+                BackgroundTransparency = 0.3,
+                BorderSizePixel = 0,
+                Text = "",
+                PlaceholderText = placeholder,
+                PlaceholderColor3 = WizardLib.Theme.TextDisabled,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 12,
+                Font = Enum.Font.Gotham,
+                ClearTextOnFocus = false,
+                Parent = input,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)}),
+                CreateInstance("UIPadding", {
+                    PaddingLeft = UDim.new(0, 10),
+                    PaddingRight = UDim.new(0, 10),
+                })
+            })
             
-            local stroke = CreateStroke(textBox, CurrentTheme.Accent, 1, 1)
+            local stroke = CreateStroke(textBox, WizardLib.Theme.Divider, 1, 0.7)
             
             textBox.Focused:Connect(function()
-                CreateTween(stroke, 0.3, {Transparency = 0}):Play()
+                Tween(stroke, 0.2, {Color = WizardLib.Theme.Accent, Transparency = 0})
             end)
+            
             textBox.FocusLost:Connect(function(enterPressed)
-                CreateTween(stroke, 0.3, {Transparency = 1}):Play()
-                if enterPressed then
+                Tween(stroke, 0.2, {Color = WizardLib.Theme.Divider, Transparency = 0.7})
+                if enterPressed or textBox.Text ~= "" then
+                    if flag then WizardLib.Flags[flag] = textBox.Text end
                     callback(textBox.Text)
                 end
             end)
+            
+            return {
+                Set = function(_, value)
+                    textBox.Text = value
+                    if flag then WizardLib.Flags[flag] = value end
+                end,
+                Get = function()
+                    return textBox.Text
+                end
+            }
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- KEYBIND
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateKeybind(options)
             options = options or {}
             local name = options.Name or "Keybind"
             local default = options.Default or Enum.KeyCode.E
+            local flag = options.Flag
             local callback = options.Callback or function() end
             
-            local keybind = Instance.new("Frame")
-            keybind.Size = UDim2.new(1, -10, 0, 45)
-            keybind.BackgroundColor3 = CurrentTheme.Secondary
-            keybind.BackgroundTransparency = 0.5
-            keybind.BorderSizePixel = 0
-            keybind.Parent = tabContent
-            CreateCorner(keybind, 8)
+            local keybind = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 42),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
             
-            local keyLabel = Instance.new("TextLabel")
-            keyLabel.Size = UDim2.new(0.6, 0, 1, 0)
-            keyLabel.Position = UDim2.new(0, 15, 0, 0)
-            keyLabel.BackgroundTransparency = 1
-            keyLabel.Text = name
-            keyLabel.TextColor3 = CurrentTheme.Text
-            keyLabel.TextSize = 13
-            keyLabel.Font = Enum.Font.Gotham
-            keyLabel.TextXAlignment = Enum.TextXAlignment.Left
-            keyLabel.Parent = keybind
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(0.6, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = keybind,
+            })
             
-            local keyBtn = Instance.new("TextButton")
-            keyBtn.Size = UDim2.new(0, 70, 0, 30)
-            keyBtn.Position = UDim2.new(1, -85, 0.5, -15)
-            keyBtn.BackgroundColor3 = CurrentTheme.Primary
-            keyBtn.BackgroundTransparency = 0.3
-            keyBtn.Text = default.Name
-            keyBtn.TextColor3 = CurrentTheme.Accent
-            keyBtn.TextSize = 12
-            keyBtn.Font = Enum.Font.GothamBold
-            keyBtn.Parent = keybind
-            CreateCorner(keyBtn, 6)
-            CreateStroke(keyBtn, CurrentTheme.Accent, 1, 0.5)
+            local keyBtn = CreateInstance("TextButton", {
+                Size = UDim2.new(0, 75, 0, 28),
+                Position = UDim2.new(1, -90, 0.5, -14),
+                BackgroundColor3 = WizardLib.Theme.Background,
+                BackgroundTransparency = 0.3,
+                BorderSizePixel = 0,
+                Text = default.Name,
+                TextColor3 = WizardLib.Theme.Accent,
+                TextSize = 12,
+                Font = Enum.Font.GothamBold,
+                AutoButtonColor = false,
+                Parent = keybind,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+            })
+            
+            CreateStroke(keyBtn, WizardLib.Theme.Accent, 1, 0.6)
             
             local listening = false
             local currentKey = default
             
+            if flag then
+                WizardLib.Flags[flag] = currentKey
+            end
+            
             keyBtn.MouseButton1Click:Connect(function()
                 listening = true
                 keyBtn.Text = "..."
-                CreateTween(keyBtn, 0.2, {BackgroundColor3 = CurrentTheme.Accent}):Play()
+                Tween(keyBtn, 0.2, {BackgroundColor3 = WizardLib.Theme.Accent, BackgroundTransparency = 0})
             end)
             
             UserInputService.InputBegan:Connect(function(input, processed)
@@ -1229,108 +1985,256 @@ function WizardUI:CreateWindow(options)
                     listening = false
                     currentKey = input.KeyCode
                     keyBtn.Text = input.KeyCode.Name
-                    CreateTween(keyBtn, 0.2, {BackgroundColor3 = CurrentTheme.Primary}):Play()
+                    if flag then WizardLib.Flags[flag] = currentKey end
+                    Tween(keyBtn, 0.2, {BackgroundColor3 = WizardLib.Theme.Background, BackgroundTransparency = 0.3})
                 elseif not processed and input.KeyCode == currentKey then
                     callback()
                 end
             end)
+            
+            return {
+                Set = function(_, key)
+                    currentKey = key
+                    keyBtn.Text = key.Name
+                    if flag then WizardLib.Flags[flag] = key end
+                end,
+                Get = function()
+                    return currentKey
+                end
+            }
         end
         
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         -- COLOR PICKER
-        -- ═══════════════════════════════════════════════════════
+        -- ═══════════════════════════════════════════════════════════════════
         
         function Tab:CreateColorPicker(options)
             options = options or {}
             local name = options.Name or "Color"
             local default = options.Default or Color3.fromRGB(255, 255, 255)
+            local flag = options.Flag
             local callback = options.Callback or function() end
             
-            local picker = Instance.new("Frame")
-            picker.Size = UDim2.new(1, -10, 0, 45)
-            picker.BackgroundColor3 = CurrentTheme.Secondary
-            picker.BackgroundTransparency = 0.5
-            picker.BorderSizePixel = 0
-            picker.Parent = tabContent
-            CreateCorner(picker, 8)
+            local picker = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 42),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                ClipsDescendants = false,
+                ZIndex = 5,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
             
-            local pickerLabel = Instance.new("TextLabel")
-            pickerLabel.Size = UDim2.new(0.6, 0, 1, 0)
-            pickerLabel.Position = UDim2.new(0, 15, 0, 0)
-            pickerLabel.BackgroundTransparency = 1
-            pickerLabel.Text = name
-            pickerLabel.TextColor3 = CurrentTheme.Text
-            pickerLabel.TextSize = 13
-            pickerLabel.Font = Enum.Font.Gotham
-            pickerLabel.TextXAlignment = Enum.TextXAlignment.Left
-            pickerLabel.Parent = picker
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(0.6, 0, 1, 0),
+                Position = UDim2.new(0, 15, 0, 0),
+                BackgroundTransparency = 1,
+                Text = name,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 13,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                ZIndex = 6,
+                Parent = picker,
+            })
             
-            local colorDisplay = Instance.new("TextButton")
-            colorDisplay.Size = UDim2.new(0, 60, 0, 30)
-            colorDisplay.Position = UDim2.new(1, -75, 0.5, -15)
-            colorDisplay.BackgroundColor3 = default
-            colorDisplay.Text = ""
-            colorDisplay.Parent = picker
-            CreateCorner(colorDisplay, 6)
-            CreateStroke(colorDisplay, Color3.new(1, 1, 1), 2, 0.5)
+            local colorDisplay = CreateInstance("TextButton", {
+                Size = UDim2.new(0, 60, 0, 28),
+                Position = UDim2.new(1, -75, 0.5, -14),
+                BackgroundColor3 = default,
+                BorderSizePixel = 0,
+                Text = "",
+                AutoButtonColor = false,
+                ZIndex = 6,
+                Parent = picker,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+            })
             
-            -- Mini color picker popup
-            local colorPopup = Instance.new("Frame")
-            colorPopup.Size = UDim2.new(0, 200, 0, 0)
-            colorPopup.Position = UDim2.new(1, -210, 1, 5)
-            colorPopup.BackgroundColor3 = CurrentTheme.Primary
-            colorPopup.BackgroundTransparency = 0.1
-            colorPopup.BorderSizePixel = 0
-            colorPopup.ClipsDescendants = true
-            colorPopup.ZIndex = 20
-            colorPopup.Visible = false
-            colorPopup.Parent = picker
-            CreateCorner(colorPopup, 8)
+            CreateStroke(colorDisplay, Color3.new(1, 1, 1), 2, 0.6)
+            
+            local colorPopup = CreateInstance("Frame", {
+                Size = UDim2.new(0, 220, 0, 0),
+                Position = UDim2.new(1, -230, 1, 8),
+                BackgroundColor3 = WizardLib.Theme.Background,
+                BorderSizePixel = 0,
+                ClipsDescendants = true,
+                ZIndex = 100,
+                Visible = false,
+                Parent = picker,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
+            
             CreateShadow(colorPopup, 15)
+            CreateStroke(colorPopup, WizardLib.Theme.Divider, 1, 0.5)
             
-            -- Preset colors
             local presets = {
-                Color3.fromRGB(255, 0, 0),
-                Color3.fromRGB(255, 128, 0),
-                Color3.fromRGB(255, 255, 0),
-                Color3.fromRGB(0, 255, 0),
-                Color3.fromRGB(0, 255, 255),
-                Color3.fromRGB(0, 128, 255),
-                Color3.fromRGB(128, 0, 255),
-                Color3.fromRGB(255, 0, 255),
-                Color3.fromRGB(255, 255, 255),
-                Color3.fromRGB(128, 128, 128),
+                Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 85, 0), Color3.fromRGB(255, 170, 0),
+                Color3.fromRGB(255, 255, 0), Color3.fromRGB(170, 255, 0), Color3.fromRGB(85, 255, 0),
+                Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 255, 85), Color3.fromRGB(0, 255, 170),
+                Color3.fromRGB(0, 255, 255), Color3.fromRGB(0, 170, 255), Color3.fromRGB(0, 85, 255),
+                Color3.fromRGB(0, 0, 255), Color3.fromRGB(85, 0, 255), Color3.fromRGB(170, 0, 255),
+                Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 0, 170), Color3.fromRGB(255, 0, 85),
+                Color3.fromRGB(255, 255, 255), Color3.fromRGB(200, 200, 200), Color3.fromRGB(150, 150, 150),
+                Color3.fromRGB(100, 100, 100), Color3.fromRGB(50, 50, 50), Color3.fromRGB(0, 0, 0),
             }
             
             for i, color in ipairs(presets) do
-                local presetBtn = Instance.new("TextButton")
-                presetBtn.Size = UDim2.new(0, 30, 0, 30)
-                presetBtn.Position = UDim2.new(0, 10 + ((i-1) % 5) * 36, 0, 10 + math.floor((i-1) / 5) * 36)
-                presetBtn.BackgroundColor3 = color
-                presetBtn.Text = ""
-                presetBtn.ZIndex = 21
-                presetBtn.Parent = colorPopup
-                CreateCorner(presetBtn, 6)
+                local presetBtn = CreateInstance("TextButton", {
+                    Size = UDim2.new(0, 28, 0, 28),
+                    Position = UDim2.new(0, 10 + ((i-1) % 6) * 34, 0, 10 + math.floor((i-1) / 6) * 34),
+                    BackgroundColor3 = color,
+                    BorderSizePixel = 0,
+                    Text = "",
+                    AutoButtonColor = false,
+                    ZIndex = 101,
+                    Parent = colorPopup,
+                }, {
+                    CreateInstance("UICorner", {CornerRadius = UDim.new(0, 6)})
+                })
                 
                 presetBtn.MouseButton1Click:Connect(function()
                     colorDisplay.BackgroundColor3 = color
+                    if flag then WizardLib.Flags[flag] = color end
                     callback(color)
+                end)
+                
+                presetBtn.MouseEnter:Connect(function()
+                    Tween(presetBtn, 0.15, {Size = UDim2.new(0, 32, 0, 32), Position = presetBtn.Position - UDim2.new(0, 2, 0, 2)})
+                end)
+                presetBtn.MouseLeave:Connect(function()
+                    Tween(presetBtn, 0.15, {Size = UDim2.new(0, 28, 0, 28), Position = UDim2.new(0, 10 + ((i-1) % 6) * 34, 0, 10 + math.floor((i-1) / 6) * 34)})
                 end)
             end
             
             local opened = false
+            local selected = default
+            
+            if flag then
+                WizardLib.Flags[flag] = selected
+            end
             
             colorDisplay.MouseButton1Click:Connect(function()
                 opened = not opened
                 
                 if opened then
                     colorPopup.Visible = true
-                    CreateTween(colorPopup, 0.3, {Size = UDim2.new(0, 200, 0, 90)}, Enum.EasingStyle.Back):Play()
+                    Tween(colorPopup, 0.3, {Size = UDim2.new(0, 220, 0, 155)}, Enum.EasingStyle.Back)
                 else
-                    CreateTween(colorPopup, 0.2, {Size = UDim2.new(0, 200, 0, 0)}):Play()
-                    delay(0.2, function() colorPopup.Visible = false end)
+                    Tween(colorPopup, 0.2, {Size = UDim2.new(0, 220, 0, 0)}, nil, nil, function()
+                        colorPopup.Visible = false
+                    end)
                 end
             end)
+            
+            return {
+                Set = function(_, color)
+                    colorDisplay.BackgroundColor3 = color
+                    selected = color
+                    if flag then WizardLib.Flags[flag] = color end
+                    callback(color)
+                end,
+                Get = function()
+                    return selected
+                end
+            }
+        end
+        
+        -- ═══════════════════════════════════════════════════════════════════
+        -- LABEL
+        -- ═══════════════════════════════════════════════════════════════════
+        
+        function Tab:CreateLabel(text, icon)
+            local label = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 32),
+                BackgroundTransparency = 1,
+                Parent = tabContent,
+            })
+            
+            if icon then
+                CreateInstance("ImageLabel", {
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Position = UDim2.new(0, 5, 0.5, -9),
+                    BackgroundTransparency = 1,
+                    Image = GetIcon(icon),
+                    ImageColor3 = WizardLib.Theme.TextDark,
+                    Parent = label,
+                })
+            end
+            
+            local textLabel = CreateInstance("TextLabel", {
+                Size = UDim2.new(1, icon and -30 or 0, 1, 0),
+                Position = UDim2.new(0, icon and 28 or 5, 0, 0),
+                BackgroundTransparency = 1,
+                Text = text,
+                TextColor3 = WizardLib.Theme.TextDark,
+                TextSize = 12,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextWrapped = true,
+                Parent = label,
+            })
+            
+            return {
+                Set = function(_, newText)
+                    textLabel.Text = newText
+                end
+            }
+        end
+        
+        -- ═══════════════════════════════════════════════════════════════════
+        -- PARAGRAPH
+        -- ═══════════════════════════════════════════════════════════════════
+        
+        function Tab:CreateParagraph(options)
+            options = options or {}
+            local title = options.Title or "Title"
+            local content = options.Content or ""
+            
+            local paragraph = CreateInstance("Frame", {
+                Size = UDim2.new(1, -10, 0, 70),
+                BackgroundColor3 = WizardLib.Theme.BackgroundSecondary,
+                BackgroundTransparency = 0.5,
+                BorderSizePixel = 0,
+                Parent = tabContent,
+            }, {
+                CreateInstance("UICorner", {CornerRadius = UDim.new(0, 8)})
+            })
+            
+            CreateInstance("TextLabel", {
+                Size = UDim2.new(1, -20, 0, 22),
+                Position = UDim2.new(0, 10, 0, 8),
+                BackgroundTransparency = 1,
+                Text = title,
+                TextColor3 = WizardLib.Theme.Text,
+                TextSize = 14,
+                Font = Enum.Font.GothamBold,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                Parent = paragraph,
+            })
+            
+            local contentLabel = CreateInstance("TextLabel", {
+                Size = UDim2.new(1, -20, 0, 35),
+                Position = UDim2.new(0, 10, 0, 30),
+                BackgroundTransparency = 1,
+                Text = content,
+                TextColor3 = WizardLib.Theme.TextDark,
+                TextSize = 12,
+                Font = Enum.Font.Gotham,
+                TextXAlignment = Enum.TextXAlignment.Left,
+                TextWrapped = true,
+                Parent = paragraph,
+            })
+            
+            return {
+                Set = function(_, newTitle, newContent)
+                    paragraph:FindFirstChild("TextLabel").Text = newTitle or title
+                    contentLabel.Text = newContent or content
+                end
+            }
         end
         
         -- Auto-select first tab
@@ -1344,25 +2248,51 @@ function WizardUI:CreateWindow(options)
         return Tab
     end
     
-    -- Theme changer
+    -- ═══════════════════════════════════════════════════════════════════════
+    -- WINDOW METHODS
+    -- ═══════════════════════════════════════════════════════════════════════
+    
     function Window:SetTheme(themeName)
         if Themes[themeName] then
-            CurrentTheme = Themes[themeName]
-            -- Refresh UI colors would go here
+            WizardLib.Theme = Themes[themeName]
+            -- Refresh UI would go here
         end
     end
     
-    -- Notify shortcut
     function Window:Notify(options)
-        WizardUI:Notify(options)
+        WizardLib:Notify(options)
     end
     
-    table.insert(ActiveWindows, Window)
+    function Window:Destroy()
+        screenGui:Destroy()
+    end
+    
+    -- Toggle keybind
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if not processed and input.KeyCode == (options.ToggleUIKeybind and Enum.KeyCode[options.ToggleUIKeybind] or Enum.KeyCode.RightShift) then
+            Window.Visible = not Window.Visible
+            main.Visible = Window.Visible
+        end
+    end)
+    
+    table.insert(WizardLib.Windows, Window)
     return Window
 end
 
--- ═══════════════════════════════════════════════════════════════
--- RETURN LIBRARY
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- LOAD CONFIGURATION
+-- ═══════════════════════════════════════════════════════════════════════════════
 
-return WizardUI
+function WizardLib:LoadConfiguration()
+    -- Configuration loading logic
+end
+
+function WizardLib:SaveConfiguration()
+    -- Configuration saving logic
+end
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- RETURN LIBRARY
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+return WizardLib
